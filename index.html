@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Raoua Ben Hamed · Portfolio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #050810;
+    --bg2: #0a0f1e;
+    --panel: #0d1428;
+    --border: #1a2644;
+    --accent: #00f5c4;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --glow: rgba(0,245,196,0.15);
+    --glow2: rgba(124,58,237,0.15);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+  /* Custom cursor */
+  #cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  #cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%; pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.25s cubic-bezier(.23,1,.32,1), width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.5;
+  }
+  body:hover #cursor-ring { opacity: 1; }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+
+  /* Stars background */
+  #stars-canvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* App shell */
+  #app { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px;
+    background: rgba(5,8,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.75rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--accent);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 100px 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid-line {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.3;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+  .hero-content { text-align: center; max-width: 800px; position: relative; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border); border-radius: 100px;
+    padding: 6px 16px; margin-bottom: 32px;
+    font-size: 0.7rem; letter-spacing: 0.15em; color: var(--muted);
+    text-transform: uppercase;
+    background: var(--panel);
+  }
+  .hero-badge span { color: var(--accent); }
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: clamp(2.8rem, 8vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .hero-name .accent { color: var(--accent); }
+  .hero-title {
+    font-size: 0.85rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .hero-desc {
+    font-size: 0.9rem; line-height: 1.8; color: var(--muted);
+    max-width: 520px; margin: 0 auto 48px;
+  }
+  .hero-cta {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 14px 32px; border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.25s;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent); color: #000;
+    box-shadow: 0 0 30px rgba(0,245,196,0.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 50px rgba(0,245,196,0.5);
+    transform: translateY(-2px);
+  }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent); color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 0.65rem; letter-spacing: 0.15em;
+    text-transform: uppercase; animation: float 2s ease-in-out infinite;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(var(--accent), transparent);
+  }
+  @keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-8px)} }
+
+  /* SECTIONS */
+  section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 64px;
+  }
+  .section-label .num {
+    font-size: 0.7rem; color: var(--accent); letter-spacing: 0.15em;
+  }
+  .section-label h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: -0.02em; color: var(--text);
+  }
+  .section-label .line {
+    flex: 1; height: 1px; background: var(--border);
+    max-width: 200px;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    align-items: start;
+  }
+  .about-text p {
+    color: var(--muted); line-height: 1.9; font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .about-text p strong { color: var(--accent); font-weight: 700; }
+  .about-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .stat-card:hover {
+    border-color: var(--accent);
+    background: rgba(0,245,196,0.03);
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 2.4rem; color: var(--accent);
+    line-height: 1; margin-bottom: 8px;
+  }
+  .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* SKILLS */
+  .skills-container { display: flex; flex-direction: column; gap: 48px; }
+  .skill-category h3 {
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .skill-category h3::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .skill-tag {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid var(--border); border-radius: 2px;
+    font-size: 0.75rem; color: var(--text);
+    background: var(--panel);
+    transition: all 0.25s; cursor: default;
+    position: relative; overflow: hidden;
+  }
+  .skill-tag::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--glow), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .skill-tag:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .skill-tag:hover::before { opacity: 1; }
+  .skill-tag .icon { font-size: 1rem; }
+  .skill-tag .bar {
+    position: absolute; bottom: 0; left: 0;
+    height: 2px; background: var(--accent);
+    transition: width 1s cubic-bezier(.23,1,.32,1);
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .project-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .project-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s cubic-bezier(.23,1,.32,1);
+  }
+  .project-card:hover { border-color: var(--accent); }
+  .project-card:hover::before { transform: scaleX(1); }
+  .project-card:hover .project-arrow { transform: translate(4px, -4px); }
+  .project-num {
+    font-size: 0.65rem; color: var(--muted); letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+  .project-name {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.4rem; letter-spacing: -0.01em;
+    color: var(--text); margin-bottom: 12px;
+  }
+  .project-desc {
+    font-size: 0.8rem; color: var(--muted);
+    line-height: 1.7; margin-bottom: 28px;
+  }
+  .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .project-tag {
+    padding: 4px 12px; border-radius: 2px;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px solid var(--border); color: var(--muted);
+    background: rgba(255,255,255,0.02);
+  }
+  .project-footer {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .project-link {
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .project-arrow { transition: transform 0.25s; }
+  .project-lang {
+    font-size: 0.65rem; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .lang-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  /* Featured project (full width) */
+  .project-card.featured {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px;
+    align-items: center;
+  }
+  .featured-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 100px;
+    background: rgba(0,245,196,0.1); border: 1px solid rgba(0,245,196,0.3);
+    font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+  }
+  .featured-visual {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 24px;
+    font-size: 0.7rem; color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    line-height: 1.6;
+    position: relative; overflow: hidden;
+  }
+  .featured-visual::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,245,196,0.03), transparent);
+  }
+  .code-line { display: flex; gap: 16px; }
+  .code-line .ln { color: var(--border); user-select: none; }
+  .code-kw { color: #c792ea; }
+  .code-fn { color: #82aaff; }
+  .code-str { color: #c3e88d; }
+  .code-cm { color: var(--muted); font-style: italic; }
+
+  /* EDUCATION */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 8px; bottom: 8px;
+    width: 1px; background: var(--border);
+  }
+  .timeline-item {
+    position: relative; margin-bottom: 48px;
+    padding-left: 28px;
+  }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -36px; top: 8px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .timeline-date {
+    font-size: 0.65rem; letter-spacing: 0.15em; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .timeline-title {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.15rem; color: var(--text); margin-bottom: 4px;
+  }
+  .timeline-place {
+    font-size: 0.8rem; color: var(--muted); margin-bottom: 8px;
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .contact-card {
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: border-color 0.3s;
+    text-decoration: none;
+  }
+  .contact-card:hover { border-color: var(--accent); }
+  .contact-card .icon { font-size: 1.5rem; }
+  .contact-card .label {
+    font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted);
+    text-transform: uppercase;
+  }
+  .contact-card .value {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.1rem; color: var(--text);
+  }
+  .contact-card:hover .value { color: var(--accent); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.7rem; color: var(--muted);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.7s ease forwards; opacity: 0; }
+  .d1 { animation-delay: 0.1s; }
+  .d2 { animation-delay: 0.2s; }
+  .d3 { animation-delay: 0.3s; }
+  .d4 { animation-delay: 0.4s; }
+  .d5 { animation-delay: 0.5s; }
+  .d6 { animation-delay: 0.6s; }
+
+  /* Terminal typing */
+  .typing::after {
+    content: '|'; animation: blink 0.8s infinite;
+    color: var(--accent);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 0.65rem; }
+    section { padding: 70px 20px; }
+    .hero { padding: 100px 20px 80px; }
+    .about-grid, .projects-grid, .contact-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: auto; grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="app"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// Stars bg
+function initStars() {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 120; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.2 + 0.2,
+      speed: Math.random() * 0.3 + 0.05,
+      twinkle: Math.random() * Math.PI * 2,
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.twinkle += 0.02;
+      const alpha = 0.3 + 0.4 * Math.sin(s.twinkle);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+      s.y += s.speed;
+      if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// Cursor
+function initCursor() {
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function loop() {
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) * 0.15;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+const skills = {
+  "Languages": [
+    { name: "Java", icon: "☕", level: 85 },
+    { name: "PHP", icon: "🐘", level: 80 },
+    { name: "JavaScript", icon: "🟨", level: 75 },
+    { name: "TypeScript", icon: "🔷", level: 65 },
+    { name: "Python", icon: "🐍", level: 60 },
+    { name: "C", icon: "⚙️", level: 60 },
+    { name: "SQL", icon: "🗄️", level: 70 },
+    { name: "HTML/CSS", icon: "🌐", level: 82 },
+  ],
+  "Frameworks & Tools": [
+    { name: "Symfony", icon: "🎵", level: 80 },
+    { name: "React", icon: "⚛️", level: 68 },
+    { name: "Docker", icon: "🐳", level: 72 },
+    { name: "Git", icon: "🌿", level: 80 },
+    { name: "PostgreSQL", icon: "🐘", level: 70 },
+    { name: "Nginx", icon: "🔁", level: 60 },
+    { name: "PHPUnit", icon: "🧪", level: 65 },
+    { name: "JWT Auth", icon: "🔐", level: 70 },
+  ],
+  "Human Languages": [
+    { name: "Arabic", icon: "🌙", level: 100 },
+    { name: "French", icon: "🇫🇷", level: 85 },
+    { name: "English", icon: "🇬🇧", level: 80 },
+  ],
+};
+
+const projects = [
+  {
+    featured: true,
+    num: "01",
+    name: "EventSphere",
+    desc: "A modern event reservation platform for Tunisia — discover hackathons, masterclasses and more. Features JWT auth, WebAuthn/Passkeys, admin dashboard with real-time stats, email sandboxing via Mailpit, and full Docker deployment.",
+    tags: ["PHP 8.2", "Symfony 7", "PostgreSQL", "Docker", "JWT", "WebAuthn", "JavaScript"],
+    lang: "PHP", langColor: "#4F5D95",
+    link: "https://github.com/raoua123/EventSphere",
+    code: [
+      { ln: "1", parts: [{ t: "code-cm", v: "// EventSphere · Event Reservation Platform" }] },
+      { ln: "2", parts: [] },
+      { ln: "3", parts: [{ t: "code-kw", v: "class " }, { t: "code-fn", v: "EventController " }, { t: "", v: "extends AbstractController" }] },
+      { ln: "4", parts: [{ t: "", v: "{" }] },
+      { ln: "5", parts: [{ t: "code-kw", v: "  #[Route(" }, { t: "code-str", v: "'/events'" }, { t: "code-kw", v: ")]" }] },
+      { ln: "6", parts: [{ t: "code-kw", v: "  public function " }, { t: "code-fn", v: "index" }, { t: "", v: "(): Response {" }] },
+      { ln: "7", parts: [{ t: "code-kw", v: "    return " }, { t: "", v: "$this->" }, { t: "code-fn", v: "render" }, { t: "", v: "(" }, { t: "code-str", v: "'event/list.html.twig'" }, { t: "", v: ");" }] },
+      { ln: "8", parts: [{ t: "", v: "  }" }] },
+      { ln: "9", parts: [{ t: "", v: "}" }] },
+    ],
+  },
+  {
+    num: "02",
+    name: "KnightVsDragons",
+    desc: "A retro 2D platformer in pure Java Swing — battle dragons by answering Java quiz questions. Pixel-art visuals, side-scrolling gameplay, OOP architecture.",
+    tags: ["Java", "Swing", "2D Graphics", "Game Dev"],
+    lang: "Java", langColor: "#b07219",
+    link: "https://github.com/raoua123/KnightVsDragons",
+  },
+  {
+    num: "03",
+    name: "Bobble",
+    desc: "A social platform + e-commerce for knitting and crochet lovers — share projects, organize patterns, and learn fiber arts. Full TypeScript stack.",
+    tags: ["TypeScript", "Social", "E-commerce"],
+    lang: "TypeScript", langColor: "#3178c6",
+    link: "https://github.com/AttiaSabrine18/bobble",
+  },
+  {
+    num: "04",
+    name: "Mini Projet",
+    desc: "Academic full-stack TypeScript project — collaborative team effort with modern architecture patterns and clean code principles.",
+    tags: ["TypeScript", "Full-Stack", "Teamwork"],
+    lang: "TypeScript", langColor: "#3178c6",
+    link: "https://github.com/AttiaSabrine18/Mini_Projet",
+  },
+];
+
+function SkillBar({ level }) {
+  const [width, setWidth] = useState(0);
+  const ref = useRef();
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setWidth(level); obs.disconnect(); }
+    }, { threshold: 0.5 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return <div ref={ref} className="bar" style={{ width: width + '%' }} />;
+}
+
+function App() {
+  useEffect(() => {
+    initStars();
+    initCursor();
+  }, []);
+
+  return (
+    <div id="app-inner">
+      {/* NAV */}
+      <nav>
+        <a className="nav-logo" href="#">raoua.dev</a>
+        <ul className="nav-links">
+          {["About","Skills","Projects","Education","Contact"].map(l => (
+            <li key={l}><a href={`#${l.toLowerCase()}`}>{l}</a></li>
+          ))}
+        </ul>
+        <div className="nav-dot" />
+      </nav>
+
+      {/* HERO */}
+      <div className="hero">
+        <div className="hero-grid-line" />
+        <div className="hero-content">
+          <div className="hero-badge fade-up d1">
+            <span>●</span> Open to opportunities
+          </div>
+          <h1 className="hero-name fade-up d2">
+            Raoua<br/><span className="accent">Ben Hamed</span>
+          </h1>
+          <p className="hero-title fade-up d3">Software Engineering Student · Tunisia</p>
+          <p className="hero-desc fade-up d4">
+            On a constant journey of learning, growth, and self-improvement.
+            Building web platforms, games, and fullstack applications.
+          </p>
+          <div className="hero-cta fade-up d5">
+            <a href="#projects" className="btn btn-primary">View Projects</a>
+            <a href="https://github.com/raoua123" target="_blank" className="btn btn-outline">GitHub ↗</a>
+          </div>
+        </div>
+        <div className="hero-scroll">
+          <div className="scroll-line" />
+          scroll
+        </div>
+      </div>
+
+      {/* ABOUT */}
+      <section id="about">
+        <div className="section-label">
+          <span className="num">01 ·</span>
+          <h2>About</h2>
+          <div className="line" />
+        </div>
+        <div className="about-grid">
+          <div className="about-text">
+            <p>
+              I'm <strong>Raoua Ben Hamed</strong>, a software engineering student based in Tunisia.
+              I'm passionate about building things that live on the internet — from fullstack web platforms
+              to pixel-art games and everything in between.
+            </p>
+            <p>
+              I work across the full stack: backend architecture with <strong>Symfony</strong> and <strong>Java</strong>,
+              frontend with <strong>React</strong>, containerization with <strong>Docker</strong>,
+              and database design with <strong>PostgreSQL</strong>.
+            </p>
+            <p>
+              When I'm not coding, I'm exploring new technologies, contributing to team projects,
+              and leveling up my problem-solving skills through coursework and personal projects.
+            </p>
+          </div>
+          <div className="about-stats">
+            {[
+              { num: "4+", label: "Projects Built" },
+              { num: "8+", label: "Technologies" },
+              { num: "3", label: "Languages Spoken" },
+              { num: "∞", label: "Curiosity" },
+            ].map(s => (
+              <div key={s.label} className="stat-card">
+                <div className="stat-num">{s.num}</div>
+                <div className="stat-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SKILLS */}
+      <section id="skills" style={{ background: 'var(--bg2)', maxWidth: '100%', padding: '100px 0' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 40px' }}>
+          <div className="section-label">
+            <span className="num">02 ·</span>
+            <h2>Skills</h2>
+            <div className="line" />
+          </div>
+          <div className="skills-container">
+            {Object.entries(skills).map(([cat, items]) => (
+              <div key={cat} className="skill-category">
+                <h3>{cat}</h3>
+                <div className="skill-tags">
+                  {items.map(s => (
+                    <div key={s.name} className="skill-tag" title={`${s.level}% proficiency`}>
+                      <span className="icon">{s.icon}</span>
+                      {s.name}
+                      <SkillBar level={s.level} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PROJECTS */}
+      <section id="projects">
+        <div className="section-label">
+          <span className="num">03 ·</span>
+          <h2>Projects</h2>
+          <div className="line" />
+        </div>
+        <div className="projects-grid">
+          {projects.map(p => (
+            <div key={p.name} className={`project-card ${p.featured ? 'featured' : ''}`}>
+              {p.featured ? (
+                <>
+                  <div>
+                    <div className="featured-badge">★ Featured Project</div>
+                    <div className="project-num">{p.num}</div>
+                    <div className="project-name">{p.name}</div>
+                    <p className="project-desc">{p.desc}</p>
+                    <div className="project-tags">
+                      {p.tags.map(t => <span key={t} className="project-tag">{t}</span>)}
+                    </div>
+                    <div className="project-footer">
+                      <a href={p.link} target="_blank" className="project-link">
+                        View on GitHub <span className="project-arrow">↗</span>
+                      </a>
+                      <div className="project-lang">
+                        <div className="lang-dot" style={{ background: p.langColor }} />
+                        {p.lang}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="featured-visual">
+                    {p.code.map((line, i) => (
+                      <div key={i} className="code-line">
+                        <span className="ln">{line.ln}</span>
+                        <span>
+                          {line.parts.map((part, j) => (
+                            <span key={j} className={part.t}>{part.v}</span>
+                          ))}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="project-num">{p.num}</div>
+                  <div className="project-name">{p.name}</div>
+                  <p className="project-desc">{p.desc}</p>
+                  <div className="project-tags">
+                    {p.tags.map(t => <span key={t} className="project-tag">{t}</span>)}
+                  </div>
+                  <div className="project-footer">
+                    <a href={p.link} target="_blank" className="project-link">
+                      View on GitHub <span className="project-arrow">↗</span>
+                    </a>
+                    <div className="project-lang">
+                      <div className="lang-dot" style={{ background: p.langColor }} />
+                      {p.lang}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* EDUCATION */}
+      <section id="education" style={{ background: 'var(--bg2)', maxWidth: '100%', padding: '100px 0' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 40px' }}>
+          <div className="section-label">
+            <span className="num">04 ·</span>
+            <h2>Education</h2>
+            <div className="line" />
+          </div>
+          <div className="timeline">
+            <div className="timeline-item">
+              <div className="timeline-date">2022 – Present</div>
+              <div className="timeline-title">Software Engineering Degree</div>
+              <div className="timeline-place">University · Tunisia</div>
+              <p style={{ color: 'var(--muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
+                Studying software engineering with a focus on full-stack development,
+                algorithms, OOP, databases, and modern web technologies.
+                Active in collaborative projects and hackathons.
+              </p>
+            </div>
+            <div className="timeline-item">
+              <div className="timeline-date">2021 – 2022</div>
+              <div className="timeline-title">Baccalaureate</div>
+              <div className="timeline-place">High School · Tunisia</div>
+              <p style={{ color: 'var(--muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
+                Graduated and proceeded to pursue a degree in software engineering,
+                fueled by a passion for technology and problem-solving.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTACT */}
+      <section id="contact">
+        <div className="section-label">
+          <span className="num">05 ·</span>
+          <h2>Contact</h2>
+          <div className="line" />
+        </div>
+        <p style={{ color: 'var(--muted)', marginBottom: 48, fontSize: '0.9rem', maxWidth: 500 }}>
+          I'm always open to new opportunities, collaborations, or just a good conversation about tech.
+        </p>
+        <div className="contact-grid">
+          <a href="https://github.com/raoua123" target="_blank" className="contact-card">
+            <div className="icon">🐙</div>
+            <div className="label">GitHub</div>
+            <div className="value">raoua123</div>
+          </a>
+          <a href="mailto:raoua@example.com" className="contact-card">
+            <div className="icon">✉️</div>
+            <div className="label">Email</div>
+            <div className="value">Get in touch</div>
+          </a>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer>
+        <span>© 2025 Raoua Ben Hamed</span>
+        <span style={{ color: 'var(--accent)' }}>raoua.dev</span>
+        <span>Built with React ⚛️</span>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('app'));
+</script>
+</body>
+</html>
