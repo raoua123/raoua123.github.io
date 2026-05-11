@@ -1,31 +1,9 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import blissBg from "@/assets/bliss-bg.jpg";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Raoua Ben Hamed — Software Engineering Student" },
-      {
-        name: "description",
-        content:
-          "Portfolio of Raoua Ben Hamed, a software engineering student at ISSATSO. Projects, skills, and contact.",
-      },
-      { property: "og:title", content: "Raoua Ben Hamed — Portfolio" },
-      {
-        property: "og:description",
-        content:
-          "A software engineering student on a constant journey of learning, growth, and self-improvement.",
-      },
-    ],
-  }),
-  component: Portfolio,
-});
-
-type Tab = "about" | "projects" | "skills" | "contact";
-
-function Portfolio() {
-  const [tab, setTab] = useState<Tab>("about");
+// Remove the createFileRoute wrapper - just export the component directly
+export default function Portfolio() {
+  const [tab, setTab] = useState<"about" | "projects" | "skills" | "contact">("about");
 
   return (
     <div
@@ -37,10 +15,9 @@ function Portfolio() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* soft white wash to lift contrast */}
+      {/* Rest of your component stays exactly the same */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/5 to-white/40 pointer-events-none" />
 
-      {/* Floating pixel decorations (no emojis) */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {Array.from({ length: 9 }).map((_, i) => (
           <div
@@ -61,7 +38,6 @@ function Portfolio() {
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8 py-10">
-        {/* Top label */}
         <div className="flex items-center justify-between mb-5 fade-in">
           <div className="mono text-xs sm:text-sm text-[color:var(--ink-deep)] bg-white/70 px-3 py-1.5 rounded-full border border-[color:var(--ink)]/20">
             raoua.dev — v2.0
@@ -71,7 +47,6 @@ function Portfolio() {
           </div>
         </div>
 
-        {/* Mac window */}
         <div className="mac-window fade-up">
           <div className="mac-titlebar">
             <span className="dot dot-r" />
@@ -81,7 +56,6 @@ function Portfolio() {
             <span className="ml-auto mono opacity-60">⌘ N</span>
           </div>
 
-          {/* Tab bar */}
           <div className="px-4 sm:px-6 pt-4 pb-3 flex flex-wrap gap-2 border-b border-[color:var(--ink)]/15 dot-paper">
             {(
               [
@@ -101,7 +75,6 @@ function Portfolio() {
             ))}
           </div>
 
-          {/* Content */}
           <div key={tab} className="p-5 sm:p-8 tab-enter">
             {tab === "about" && <About />}
             {tab === "projects" && <Projects />}
@@ -117,6 +90,9 @@ function Portfolio() {
     </div>
   );
 }
+
+// Keep ALL your component definitions (About, Projects, Skills, Contact) exactly as they are
+// ... paste them here unchanged ...
 
 /* =================== ABOUT =================== */
 function About() {

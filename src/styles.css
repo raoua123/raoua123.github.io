@@ -1,9 +1,6 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
 @import "tw-animate-css";
 @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=VT323&display=swap");
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --radius-sm: 8px;
@@ -38,8 +35,8 @@
   --ink-deep: #0d2566;
   --ink-soft: #5e85cc;
   --ink-bright: #2f78ff;
-  --paper: #fbfbf7;       /* warm vintage paper */
-  --paper-soft: #f3efe4;  /* aged tone */
+  --paper: #fbfbf7;
+  --paper-soft: #f3efe4;
 
   --background: oklch(0.985 0.01 90);
   --foreground: oklch(0.32 0.16 260);
