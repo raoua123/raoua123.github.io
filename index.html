@@ -1,827 +1,961 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Raoua Ben Hamed · Portfolio</title>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet"/>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+import { useState, useEffect, useRef } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 
-body {
-  min-height: 100vh;
-  font-family: 'Pixelify Sans', monospace;
-  overflow-x: hidden;
-  background: #3a6b35;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpolygon points='0,0 0,14 4,11 6,16 8,15 6,10 10,10' fill='white' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 0 0, auto;
-}
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Raoua Ben Hamed — Software Engineering Student" },
+      { name: "description", content: "Portfolio of Raoua Ben Hamed, a software engineering student at ISSATSO." },
+    ],
+  }),
+  component: Portfolio,
+});
 
-/* XP Bliss background */
-.xp-bg {
-  position: fixed; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 120% 60% at 50% 100%, #3a7d2c 0%, #4e9e3a 30%, #6ac14e 55%, #8fd46a 65%, transparent 75%),
-    radial-gradient(ellipse 80% 40% at 30% 85%, #2d6b22 0%, #3d8a2e 40%, transparent 70%),
-    radial-gradient(ellipse 60% 30% at 70% 90%, #4a9635 0%, transparent 60%),
-    linear-gradient(180deg, #4fa3e0 0%, #6dbde8 20%, #9dd4f0 35%, #b8e0f7 42%, #cdeafc 48%, #ddf1fd 52%, #f0f8ff 58%, #e8f5e8 65%, #c8e89a 75%, #8fcf58 85%, #5aad35 95%, #3d8a28 100%);
-}
+/* ── Global styles injected once ── */
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap');
 
-.xp-sun {
-  position: fixed; top: 8%; right: 15%; z-index: 1;
-  width: 80px; height: 80px;
-  background: radial-gradient(circle, rgba(255,255,220,0.9) 0%, rgba(255,255,150,0.4) 40%, transparent 70%);
-  border-radius: 50%; filter: blur(2px); pointer-events: none;
-  animation: sunPulse 4s ease-in-out infinite;
-}
-@keyframes sunPulse { 0%,100%{transform:scale(1);opacity:0.9} 50%{transform:scale(1.08);opacity:1} }
+  :root {
+    --blue-dark: #0a0e1a;
+    --blue-mid: #0d1b2a;
+    --blue-glow: #00aaff;
+    --blue-dim: #003d6b;
+    --blue-bright: #4dd4ff;
+    --blue-pale: #a8d8ff;
+    --amber: #f0a500;
+    --cream: #e8dfc8;
+    --scanline: rgba(0,170,255,0.04);
+    --pixel-border: 2px solid var(--blue-glow);
+  }
 
-.cloud { position: fixed; z-index: 1; pointer-events: none; animation: drift linear infinite; }
-.cloud svg { fill: rgba(255,255,255,0.88); filter: drop-shadow(0 4px 12px rgba(255,255,255,0.3)); }
-@keyframes drift { from{transform:translateX(-200px)} to{transform:translateX(110vw)} }
+  * { box-sizing: border-box; margin: 0; padding: 0; image-rendering: pixelated; }
 
-/* ── TASKBAR ── */
-.taskbar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
-  height: 40px;
-  background: linear-gradient(180deg, #1f6bcc 0%, #245eae 4%, #1652a8 8%, #1960c8 50%, #1454b0 92%, #0f44a0 100%);
-  border-top: 2px solid #4a90d9;
-  display: flex; align-items: center;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.4);
-}
-.start-btn {
-  height: 36px; margin: 2px 4px;
-  background: linear-gradient(180deg, #5bb85b 0%, #3ea83e 15%, #2d9a2d 50%, #258025 85%, #1e6f1e 100%);
-  border: 1px solid #1a5c1a; border-radius: 0 14px 14px 0;
-  padding: 0 16px 0 10px; display: flex; align-items: center; gap: 6px;
-  font-family: 'VT323', monospace; font-size: 18px;
-  color: white; font-weight: bold; font-style: italic;
-  cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 1px 0 4px rgba(0,0,0,0.3);
-}
-.start-btn:hover { filter: brightness(1.1); }
-.taskbar-divider { width: 2px; height: 28px; margin: 0 4px; background: linear-gradient(180deg, transparent, #4a90d9, transparent); }
-.taskbar-apps { display: flex; gap: 2px; flex: 1; padding: 0 4px; overflow: hidden; }
-.taskbar-app {
-  height: 30px; padding: 0 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
-  border: 1px solid rgba(255,255,255,0.2); border-radius: 2px;
-  font-family: 'VT323', monospace; font-size: 13px; color: white;
-  display: flex; align-items: center; gap: 4px; cursor: pointer;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5); white-space: nowrap;
-  transition: background 0.15s; max-width: 140px;
-}
-.taskbar-app:hover { background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%); }
-.taskbar-app.active { background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.1) 100%); box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3); }
-.taskbar-clock {
-  padding: 0 12px; color: white; font-family: 'VT323', monospace; font-size: 15px;
-  text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  border-left: 1px solid rgba(255,255,255,0.2); min-width: 80px;
-}
+  body { background: var(--blue-dark); }
 
-/* ── DESKTOP ICONS ── */
-.desktop-icons { position: fixed; top: 20px; left: 20px; z-index: 10; display: flex; flex-direction: column; gap: 14px; }
-.desktop-icon {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  width: 74px; cursor: pointer; padding: 4px;
-  border: 1px solid transparent; border-radius: 2px;
-  transition: border-color 0.1s, background 0.1s; text-decoration: none;
-  user-select: none;
-}
-.desktop-icon:hover { background: rgba(49,106,197,0.35); border-color: rgba(49,106,197,0.6); }
-.desktop-icon:active { background: rgba(49,106,197,0.6); }
-.di-img { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
-.di-label {
-  font-family: 'VT323', monospace; font-size: 13px; color: white;
-  text-align: center; line-height: 1.2; word-break: break-word;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), -1px -1px 3px rgba(0,0,0,0.9),
-               1px -1px 3px rgba(0,0,0,0.9), -1px 1px 3px rgba(0,0,0,0.9);
-}
+  /* Scanline overlay */
+  .scanlines::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scanline) 2px, var(--scanline) 4px);
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanroll 8s linear infinite;
+  }
+  @keyframes scanroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 100vh; }
+  }
 
-/* ── WINDOWS ── */
-.win {
-  position: absolute; background: #ece9d8;
-  border: 2px solid #0054e3; border-radius: 6px 6px 4px 4px;
-  box-shadow: 2px 2px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.8);
-  min-width: 300px; pointer-events: all;
-  display: none; flex-direction: column; overflow: hidden;
-}
-.win.open { display: flex; }
-.win.minimized { display: none !important; }
+  /* CRT flicker */
+  @keyframes crt-flicker {
+    0%,100%   { opacity:1; }
+    92%       { opacity:1; }
+    93%       { opacity:.85; }
+    94%       { opacity:1; }
+    97%       { opacity:.9; }
+    98%       { opacity:1; }
+  }
 
-.win-titlebar {
-  height: 28px;
-  background: linear-gradient(180deg, #0058ee 0%, #2874e8 8%, #1560e0 45%, #0950d4 92%, #0644c0 100%);
-  display: flex; align-items: center; padding: 0 4px; gap: 4px;
-  cursor: move; border-radius: 4px 4px 0 0; flex-shrink: 0;
-}
-.win-icon-title { font-size: 14px; width: 16px; text-align: center; flex-shrink: 0; }
-.win-title {
-  flex: 1; font-family: 'VT323', monospace; font-size: 15px;
-  color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-  letter-spacing: 0.03em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-}
-.win-btns { display: flex; gap: 2px; flex-shrink: 0; }
-.win-btn {
-  width: 21px; height: 21px; border-radius: 2px;
-  border: 1px solid rgba(0,0,0,0.3);
-  font-family: 'VT323', monospace; font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: black; line-height: 1;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); flex-shrink: 0;
-}
-.win-btn.minimize { background: linear-gradient(180deg, #f5d060 0%, #e8b800 50%, #d4a800 100%); }
-.win-btn.maximize { background: linear-gradient(180deg, #80dc80 0%, #40c040 50%, #30a830 100%); }
-.win-btn.close    { background: linear-gradient(180deg, #ff7070 0%, #e83030 50%, #cc2020 100%); color: white; font-size: 18px; }
-.win-btn:hover { filter: brightness(1.15); }
-.win-btn:active { filter: brightness(0.9); }
+  /* Pixel blink cursor */
+  @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  .blink { animation: blink 1s step-start infinite; }
 
-.win-menubar {
-  height: 22px; background: #ece9d8; border-bottom: 1px solid #aca899;
-  display: flex; align-items: center; padding: 0 4px; gap: 2px; flex-shrink: 0;
-}
-.win-menu-item {
-  font-family: 'VT323', monospace; font-size: 14px; color: #000;
-  padding: 2px 8px; cursor: pointer; border-radius: 2px;
-}
-.win-menu-item:hover { background: #316ac5; color: white; }
+  /* Float */
+  @keyframes floatY {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .float { animation: floatY 4s ease-in-out infinite; }
 
-.win-addrbar {
-  height: 28px; background: #ece9d8; border-bottom: 1px solid #aca899;
-  display: flex; align-items: center; padding: 0 6px; gap: 6px; flex-shrink: 0;
-}
-.win-addrbar label { font-family: 'VT323', monospace; font-size: 13px; color: #000; }
-.win-addrbar input {
-  flex: 1; height: 20px; border: 1px solid #7f9db9; background: white;
-  font-family: 'VT323', monospace; font-size: 13px; padding: 0 4px; outline: none;
-}
+  /* Slide in from left */
+  @keyframes slideInLeft {
+    from { opacity:0; transform: translateX(-30px); }
+    to   { opacity:1; transform: translateX(0); }
+  }
+  /* Slide in from bottom */
+  @keyframes slideInUp {
+    from { opacity:0; transform: translateY(24px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  /* Fade in */
+  @keyframes fadeIn {
+    from { opacity:0; } to { opacity:1; }
+  }
+  /* Glitch */
+  @keyframes glitch {
+    0%   { clip-path: inset(0 0 96% 0); transform: translate(-2px,0); }
+    10%  { clip-path: inset(40% 0 40% 0); transform: translate(2px,0); }
+    20%  { clip-path: inset(80% 0 0 0);  transform: translate(0,0); }
+    30%  { clip-path: inset(0 0 0 0);    transform: translate(0,0); }
+    100% { clip-path: inset(0 0 0 0);    transform: translate(0,0); }
+  }
+  @keyframes glitch2 {
+    0%   { clip-path: inset(60% 0 30% 0); transform: translate(2px,0); color:#f0a500; }
+    10%  { clip-path: inset(20% 0 70% 0); transform: translate(-2px,0); color:#4dd4ff; }
+    20%  { clip-path: inset(0 0 0 0);     transform: translate(0,0); }
+    100% { clip-path: inset(0 0 0 0);     transform: translate(0,0); }
+  }
+  .glitch-wrap { position: relative; display: inline-block; }
+  .glitch-wrap::before,
+  .glitch-wrap::after {
+    content: attr(data-text);
+    position: absolute; inset: 0;
+    font: inherit;
+    color: var(--blue-bright);
+  }
+  .glitch-wrap::before { animation: glitch 5s step-start infinite; }
+  .glitch-wrap::after  { animation: glitch2 5s 0.1s step-start infinite; }
 
-.win-body { flex: 1; overflow-y: auto; overflow-x: hidden; background: white; border-top: 1px solid #aca899; }
-.win-body::-webkit-scrollbar { width: 16px; }
-.win-body::-webkit-scrollbar-track { background: #f0ede3; border: 1px solid #aca899; }
-.win-body::-webkit-scrollbar-thumb { background: linear-gradient(90deg, #c0bdb0, #d0cdc0); border: 1px solid #888; }
+  /* Pixel progress bar */
+  .pixel-bar {
+    height: 12px;
+    background: var(--blue-dim);
+    border: 2px solid var(--blue-glow);
+    position: relative;
+    image-rendering: pixelated;
+  }
+  .pixel-bar-fill {
+    height: 100%;
+    background: repeating-linear-gradient(90deg, var(--blue-glow) 0px, var(--blue-glow) 6px, var(--blue-bright) 6px, var(--blue-bright) 12px);
+    transition: width 1.2s cubic-bezier(.23,1,.32,1);
+    position: relative;
+  }
+  .pixel-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0; width: 4px;
+    background: white;
+    animation: blink 0.5s step-start infinite;
+  }
 
-.win-statusbar {
-  height: 22px; background: #ece9d8; border-top: 1px solid #aca899;
-  display: flex; align-items: center; padding: 0 8px;
-  font-family: 'VT323', monospace; font-size: 13px; color: #444; flex-shrink: 0; gap: 8px;
-}
-.sb-section { border-right: 1px solid #aca899; padding-right: 8px; }
+  /* Window chrome */
+  .px-window {
+    border: 2px solid var(--blue-glow);
+    background: var(--blue-mid);
+    box-shadow: 0 0 20px rgba(0,170,255,0.25), inset 0 0 40px rgba(0,170,255,0.03);
+    image-rendering: pixelated;
+  }
+  .px-titlebar {
+    background: var(--blue-glow);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--blue-dark);
+    user-select: none;
+  }
+  .px-dots { display: flex; gap: 5px; }
+  .px-dot {
+    width: 10px; height: 10px;
+    border: 2px solid var(--blue-dark);
+    image-rendering: pixelated;
+  }
+  .px-dot.r { background: #ff5f5f; }
+  .px-dot.y { background: #f0a500; }
+  .px-dot.g { background: #50fa7b; }
 
-/* ── ABOUT ── */
-.about-content { padding: 20px; display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; }
-.about-avatar {
-  width: 80px; height: 80px;
-  background: linear-gradient(135deg, #316ac5, #0040aa);
-  border: 3px solid #7f9db9; border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 42px; flex-shrink: 0;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-.about-info h2 { font-family: 'Press Start 2P', monospace; font-size: 9px; color: #003399; margin-bottom: 10px; line-height: 1.5; }
-.xp-info-row { display: flex; gap: 8px; font-family: 'VT323', monospace; font-size: 16px; color: #333; margin-bottom: 5px; }
-.xp-info-label { color: #555; min-width: 80px; }
-.about-info a { color: #0055cc; }
+  /* Nav tabs */
+  .px-tab {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    padding: 8px 14px;
+    border: 2px solid transparent;
+    color: var(--blue-pale);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .px-tab:hover { border-color: var(--blue-glow); color: var(--blue-bright); }
+  .px-tab.active {
+    border-bottom: 2px solid var(--blue-glow);
+    color: var(--blue-glow);
+    background: rgba(0,170,255,0.08);
+  }
 
-/* ── SKILLS ── */
-.skills-content { padding: 16px; }
-.skill-group { margin-bottom: 20px; }
-.skill-group-title {
-  font-family: 'Press Start 2P', monospace; font-size: 7px; color: #316ac5;
-  margin-bottom: 10px; padding-bottom: 4px; border-bottom: 1px solid #aca899; text-transform: uppercase;
-}
-.skill-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.skill-pill {
-  padding: 3px 10px; background: linear-gradient(180deg, #f0ede3 0%, #ddd9c4 100%);
-  border: 1px solid #aca899; border-radius: 2px;
-  font-family: 'VT323', monospace; font-size: 15px; color: #000;
-  box-shadow: 1px 1px 0 white inset, -1px -1px 0 #888 inset;
-  cursor: default; transition: all 0.1s;
-}
-.skill-pill:hover { background: linear-gradient(180deg, #316ac5, #0040aa); color: white; border-color: #003399; }
-.skill-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.skill-bar-label { font-family: 'VT323', monospace; font-size: 15px; min-width: 110px; }
-.skill-bar-track {
-  flex: 1; height: 14px; background: #c0bdb0; border: 1px solid #888;
-  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3); position: relative; border-radius: 1px;
-}
-.skill-bar-fill {
-  height: 100%; background: linear-gradient(180deg, #4a90d9 0%, #316ac5 50%, #1a5aab 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); transition: width 1.2s ease; border-radius: 1px 0 0 1px;
-}
-.skill-bar-pct { font-family: 'VT323', monospace; font-size: 13px; color: #333; min-width: 36px; }
+  /* Card hover */
+  .px-card {
+    border: 2px solid var(--blue-dim);
+    background: rgba(13,27,42,0.9);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+  .px-card:hover {
+    border-color: var(--blue-glow);
+    box-shadow: 0 0 16px rgba(0,170,255,0.3);
+    transform: translateY(-3px);
+  }
 
-/* ── PROJECTS ── */
-.proj-sidebar { display: flex; height: 100%; }
-.proj-list-panel {
-  width: 170px; flex-shrink: 0; background: #f5f3ea;
-  border-right: 1px solid #aca899; overflow-y: auto;
-}
-.proj-list-item {
-  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
-  cursor: pointer; border-bottom: 1px solid #e0ddd0;
-  font-family: 'VT323', monospace; font-size: 15px; color: #000;
-  transition: background 0.1s;
-}
-.proj-list-item:hover { background: #d4e4f7; }
-.proj-list-item.active { background: #316ac5; color: white; }
-.proj-detail { flex: 1; padding: 16px; overflow-y: auto; }
-.proj-detail-header {
-  display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px;
-  padding-bottom: 10px; border-bottom: 1px solid #aca899;
-}
-.proj-detail-icon { font-size: 36px; flex-shrink: 0; }
-.proj-detail-title { font-family: 'Press Start 2P', monospace; font-size: 8px; color: #003399; margin-bottom: 6px; line-height: 1.5; }
-.proj-detail-sub { font-family: 'VT323', monospace; font-size: 14px; color: #555; }
-.proj-detail-desc { font-family: 'VT323', monospace; font-size: 16px; color: #222; line-height: 1.6; margin-bottom: 14px; }
-.proj-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
-.proj-tag { padding: 2px 8px; background: #ddeeff; border: 1px solid #7f9db9; font-family: 'VT323', monospace; font-size: 13px; color: #003399; border-radius: 2px; }
-.proj-link-btn {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px;
-  background: linear-gradient(180deg, #f0ede3 0%, #ddd9c4 100%);
-  border: 1px solid #aca899; box-shadow: 1px 1px 0 white inset, -1px -1px 0 #888 inset;
-  font-family: 'VT323', monospace; font-size: 15px; color: #000;
-  text-decoration: none; cursor: pointer; border-radius: 2px; transition: all 0.1s;
-}
-.proj-link-btn:hover { background: linear-gradient(180deg, #316ac5, #0040aa); color: white; border-color: #003399; }
-.proj-lang-badge {
-  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px;
-  border: 1px solid #aca899; font-family: 'VT323', monospace; font-size: 13px; color: #333;
-  background: #f5f3ea; border-radius: 2px; margin-left: 8px;
-}
-.lang-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  /* Glow text */
+  .glow { text-shadow: 0 0 10px var(--blue-glow), 0 0 30px rgba(0,170,255,0.4); }
+  .glow-amber { text-shadow: 0 0 10px var(--amber), 0 0 30px rgba(240,165,0,0.4); }
 
-/* ── NOTEPAD ── */
-.notepad-content {
-  width: 100%; height: 100%; resize: none; border: none; outline: none;
-  font-family: 'VT323', monospace; font-size: 16px; color: #000;
-  background: white; padding: 8px; line-height: 1.6;
-}
+  /* Stars background */
+  @keyframes twinkle {
+    0%,100% { opacity:0.2; } 50% { opacity:1; }
+  }
 
-/* ── CONTACT ── */
-.contact-link {
-  font-family: 'VT323', monospace; font-size: 16px; color: #0055cc;
-  text-decoration: none; display: flex; align-items: center; gap: 8px;
-  padding: 6px 10px; border: 1px solid #aca899; background: #f5f3ea;
-  border-radius: 2px; transition: all 0.1s;
-}
-.contact-link:hover { background: #316ac5; color: white; border-color: #003399; }
+  /* Marquee */
+  .marquee-wrap { overflow: hidden; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-track { display: flex; animation: marquee 22s linear infinite; white-space: nowrap; }
 
-/* ── SPLASH ── */
-.xp-splash {
-  position: fixed; inset: 0; z-index: 9999; background: #003399;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;
-  transition: opacity 0.8s ease;
-}
-.xp-splash.fade-out { opacity: 0; pointer-events: none; }
-.xp-flag { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 64px; height: 64px; margin-bottom: 12px; }
-.xp-flag div { border-radius: 3px; }
-.f1{background:#f25022} .f2{background:#7fba00} .f3{background:#00a4ef} .f4{background:#ffb900}
-.xp-splash-text { font-family: 'VT323', monospace; font-size: 52px; color: white; font-style: italic; }
-.xp-splash-sub { font-family: 'VT323', monospace; font-size: 18px; color: rgba(255,255,255,0.7); letter-spacing: 0.1em; }
-.xp-progress-track { width: 220px; height: 14px; border: 1px solid rgba(255,255,255,0.4); border-radius: 7px; background: rgba(0,0,0,0.3); overflow: hidden; }
-.xp-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4da6ff, #80c4ff); border-radius: 7px; animation: xpLoad 2.4s ease forwards; }
-@keyframes xpLoad { 0%{width:0%} 30%{width:25%} 60%{width:60%} 80%{width:82%} 100%{width:100%} }
-.xp-loading-text { font-family: 'VT323', monospace; font-size: 15px; color: rgba(255,255,255,0.6); }
+  /* Section reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-/* Hint */
-.dblclick-hint {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-family: 'VT323', monospace; font-size: 20px; color: white;
-  text-align: center; text-shadow: 1px 1px 5px rgba(0,0,0,0.9), -1px -1px 5px rgba(0,0,0,0.9);
-  pointer-events: none; z-index: 5; animation: hintPulse 3s ease-in-out infinite;
-}
-@keyframes hintPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+  /* Scrollbar */
+  .px-scroll::-webkit-scrollbar { width: 8px; }
+  .px-scroll::-webkit-scrollbar-track { background: var(--blue-dark); }
+  .px-scroll::-webkit-scrollbar-thumb { background: var(--blue-dim); border: 1px solid var(--blue-glow); }
 
-/* Tooltip bubble */
-.tray-bubble {
-  position: fixed; bottom: 50px; right: 16px; z-index: 500;
-  background: #ffffe1; border: 1px solid #888; padding: 8px 12px;
-  font-family: 'VT323', monospace; font-size: 14px; color: #333;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.3); max-width: 200px;
-  border-radius: 4px 4px 0 4px; cursor: pointer;
-  animation: popIn 0.3s ease;
-}
-.tray-bubble::after {
-  content: ''; position: absolute; bottom: -7px; right: 12px;
-  border: 7px solid transparent; border-top-color: #888; border-bottom: none;
-}
-@keyframes popIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-</style>
-</head>
-<body>
+  /* Loading bar animation */
+  @keyframes load-fill {
+    from { width: 0%; } to { width: 100%; }
+  }
 
-<!-- SPLASH -->
-<div class="xp-splash" id="splash">
-  <div style="display:flex;flex-direction:column;align-items:center">
-    <div class="xp-flag"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div></div>
-    <div class="xp-splash-text">raoua.xp</div>
-    <div class="xp-splash-sub">Professional Edition</div>
-  </div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-    <div class="xp-progress-track"><div class="xp-progress-fill"></div></div>
-    <div class="xp-loading-text">Loading portfolio...</div>
-  </div>
-</div>
+  /* Pixel grid background */
+  .pixel-grid-bg {
+    background-image:
+      linear-gradient(rgba(0,170,255,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,170,255,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
 
-<div class="xp-bg"></div>
-<div class="xp-sun"></div>
+  /* Corner decorations */
+  .corner-tl::before, .corner-br::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    border-color: var(--amber);
+    border-style: solid;
+  }
+  .corner-tl::before { top: 4px; left: 4px; border-width: 2px 0 0 2px; }
+  .corner-br::after  { bottom: 4px; right: 4px; border-width: 0 2px 2px 0; }
 
-<!-- CLOUDS -->
-<div class="cloud" style="top:8%;animation-duration:60s;animation-delay:-12s">
-  <svg width="130" height="55" viewBox="0 0 130 55"><ellipse cx="65" cy="38" rx="60" ry="20"/><ellipse cx="48" cy="30" rx="30" ry="20"/><ellipse cx="80" cy="27" rx="26" ry="18"/></svg>
-</div>
-<div class="cloud" style="top:16%;animation-duration:90s;animation-delay:-40s">
-  <svg width="95" height="42" viewBox="0 0 95 42"><ellipse cx="47" cy="30" rx="43" ry="15"/><ellipse cx="34" cy="24" rx="22" ry="15"/><ellipse cx="62" cy="22" rx="20" ry="13"/></svg>
-</div>
-<div class="cloud" style="top:5%;animation-duration:110s;animation-delay:-70s">
-  <svg width="160" height="65" viewBox="0 0 160 65"><ellipse cx="80" cy="46" rx="74" ry="22"/><ellipse cx="58" cy="36" rx="36" ry="24"/><ellipse cx="104" cy="33" rx="30" ry="20"/><ellipse cx="80" cy="30" rx="24" ry="18"/></svg>
-</div>
+  @keyframes scan-horiz {
+    0%   { top: -4px; }
+    100% { top: 100%; }
+  }
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,200,255,0.5), transparent);
+    animation: scan-horiz 4s linear infinite;
+    pointer-events: none;
+  }
+`;
 
-<!-- HINT -->
-<div class="dblclick-hint" id="hint">Double-click icons to open windows</div>
-
-<!-- DESKTOP ICONS -->
-<div class="desktop-icons">
-
-  <div class="desktop-icon" ondblclick="openWin('about')">
-    <div class="di-img">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <rect x="2" y="8" width="40" height="30" rx="3" fill="#316ac5" stroke="#0040aa" stroke-width="1.5"/>
-        <rect x="2" y="8" width="40" height="9" rx="3" fill="#4a90d9"/>
-        <rect x="2" y="14" width="40" height="3" fill="#4a90d9"/>
-        <circle cx="22" cy="27" r="7" fill="#ffe0b2" stroke="#d4a060" stroke-width="1"/>
-        <rect x="13" y="35" width="18" height="3" rx="2" fill="#ffe0b2"/>
-        <circle cx="9" cy="12" r="2" fill="#ff5555"/>
-        <circle cx="15" cy="12" r="2" fill="#ffcc00"/>
-        <circle cx="21" cy="12" r="2" fill="#55cc55"/>
-      </svg>
+/* ── Star field ── */
+function StarField() {
+  const stars = Array.from({ length: 80 }, (_, i) => ({
+    x: (i * 137.5 + 11) % 100,
+    y: (i * 73.3 + 7) % 100,
+    size: [1,1,1,2][i % 4],
+    delay: (i * 0.13) % 3,
+    dur: 2 + (i % 3),
+  }));
+  return (
+    <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}>
+      {stars.map((s,i) => (
+        <div key={i} style={{
+          position:'absolute',
+          left:`${s.x}%`,
+          top:`${s.y}%`,
+          width:s.size,
+          height:s.size,
+          background:'#a8d8ff',
+          animation:`twinkle ${s.dur}s ${s.delay}s ease-in-out infinite`,
+        }} />
+      ))}
     </div>
-    <div class="di-label">About Me</div>
-  </div>
+  );
+}
 
-  <div class="desktop-icon" ondblclick="openWin('projects')">
-    <div class="di-img">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <rect x="2" y="13" width="40" height="27" rx="2" fill="#f5c842" stroke="#c8a000" stroke-width="1.5"/>
-        <path d="M2 17 Q22 9 42 17" fill="#ffd740" stroke="#c8a000" stroke-width="1"/>
-        <rect x="8" y="6" width="14" height="9" rx="2" fill="#ffd740" stroke="#c8a000" stroke-width="1.5"/>
-        <rect x="10" y="22" width="10" height="8" rx="1" fill="white" opacity="0.5"/>
-        <rect x="24" y="22" width="10" height="8" rx="1" fill="white" opacity="0.5"/>
-        <rect x="10" y="32" width="24" height="4" rx="1" fill="white" opacity="0.35"/>
-      </svg>
-    </div>
-    <div class="di-label">My Projects</div>
-  </div>
-
-  <div class="desktop-icon" ondblclick="openWin('skills')">
-    <div class="di-img">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <rect x="4" y="4" width="36" height="36" rx="4" fill="#7b68ee" stroke="#5a4dcc" stroke-width="1.5"/>
-        <rect x="8" y="13" width="28" height="4" rx="2" fill="white" opacity="0.9"/>
-        <rect x="8" y="21" width="20" height="4" rx="2" fill="white" opacity="0.9"/>
-        <rect x="8" y="29" width="24" height="4" rx="2" fill="white" opacity="0.9"/>
-        <circle cx="34" cy="15" r="4" fill="#00cc66"/>
-        <circle cx="34" cy="23" r="4" fill="#ffcc00"/>
-        <circle cx="34" cy="31" r="4" fill="#4a90d9"/>
-      </svg>
-    </div>
-    <div class="di-label">Skills</div>
-  </div>
-
-  <div class="desktop-icon" ondblclick="openWin('contact')">
-    <div class="di-img">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <rect x="2" y="10" width="40" height="28" rx="3" fill="#e8e8e8" stroke="#aaa" stroke-width="1.5"/>
-        <path d="M2 14 L22 27 L42 14" stroke="#316ac5" stroke-width="2" fill="none"/>
-        <path d="M2 38 L16 25" stroke="#bbb" stroke-width="1.5"/>
-        <path d="M42 38 L28 25" stroke="#bbb" stroke-width="1.5"/>
-      </svg>
-    </div>
-    <div class="di-label">Contact</div>
-  </div>
-
-  <a class="desktop-icon" href="https://github.com/raoua123" target="_blank">
-    <div class="di-img">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <circle cx="22" cy="22" r="20" fill="#1a1a2e" stroke="#444" stroke-width="1"/>
-        <path d="M22 10C15.37 10 10 15.37 10 22c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23A11.5 11.5 0 0 1 22 12.9c1.02.005 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58C30.57 31.79 34 27.3 34 22c0-6.63-5.37-12-12-12z" fill="white"/>
-      </svg>
-    </div>
-    <div class="di-label">GitHub</div>
-  </a>
-
-  <div class="desktop-icon" ondblclick="openWin('notepad')">
-    <div class="di-img">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <rect x="4" y="2" width="30" height="38" rx="2" fill="white" stroke="#aaa" stroke-width="1.5"/>
-        <rect x="4" y="2" width="30" height="7" fill="#316ac5" rx="2"/>
-        <rect x="7" y="4" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
-        <rect x="8" y="14" width="22" height="2" fill="#ddd"/>
-        <rect x="8" y="19" width="18" height="2" fill="#ddd"/>
-        <rect x="8" y="24" width="20" height="2" fill="#ddd"/>
-        <rect x="8" y="29" width="14" height="2" fill="#ddd"/>
-        <rect x="30" y="10" width="10" height="26" rx="2" fill="#f0ede3" stroke="#aaa" stroke-width="1"/>
-        <rect x="32" y="14" width="6" height="8" rx="1" fill="#c0bdb0"/>
-      </svg>
-    </div>
-    <div class="di-label">ReadMe.txt</div>
-  </div>
-
-</div>
-
-<!-- WINDOWS AREA -->
-<div id="windows-area" style="position:fixed;inset:0;bottom:40px;z-index:100;pointer-events:none">
-
-  <!-- ABOUT -->
-  <div class="win" id="win-about" style="width:500px;height:340px;top:60px;left:120px">
-    <div class="win-titlebar" id="tb-about">
-      <span class="win-icon-title">🖥</span>
-      <span class="win-title">About Me — Raoua Ben Hamed</span>
-      <div class="win-btns">
-        <div class="win-btn minimize" onclick="minimizeWin('about')">_</div>
-        <div class="win-btn maximize" onclick="maximizeWin('about')">□</div>
-        <div class="win-btn close" onclick="closeWin('about')">✕</div>
+/* ── Boot screen ── */
+function BootScreen({ onDone }) {
+  const [lines, setLines] = useState([]);
+  const BOOT_LINES = [
+    "> BIOS v2.1 ... OK",
+    "> RAM CHECK ... 8192 MB",
+    "> LOADING KERNEL ...",
+    "> MOUNTING /dev/portfolio",
+    "> INITIALIZING RAOUA.SYS ...",
+    "> PORTFOLIO READY",
+  ];
+  useEffect(() => {
+    let i = 0;
+    const id = setInterval(() => {
+      setLines(prev => [...prev, BOOT_LINES[i]]);
+      i++;
+      if (i >= BOOT_LINES.length) {
+        clearInterval(id);
+        setTimeout(onDone, 700);
+      }
+    }, 320);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div style={{
+      position:'fixed', inset:0, background:'#000', zIndex:100,
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+      fontFamily:"'Share Tech Mono',monospace", color:'#00aaff', padding:40,
+    }}>
+      <div style={{ fontSize:11, lineHeight:2, maxWidth:400, width:'100%' }}>
+        {lines.map((l,i) => (
+          <div key={i} style={{ animation:'fadeIn 0.2s ease' }}>{l}</div>
+        ))}
+        {lines.length < BOOT_LINES.length && (
+          <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:4 }}>
+            <span style={{animation:'blink 0.7s step-start infinite', background:'#00aaff', width:8, height:14, display:'inline-block'}} />
+          </div>
+        )}
+      </div>
+      <div style={{ marginTop:40, width:'min(400px,80%)', height:6, background:'#001a2e', border:'2px solid #00aaff' }}>
+        <div style={{
+          height:'100%',
+          background:'#00aaff',
+          animation:`load-fill ${(BOOT_LINES.length * 320) / 1000}s linear forwards`,
+          width:0,
+        }} />
       </div>
     </div>
-    <div class="win-menubar">
-      <span class="win-menu-item">File</span><span class="win-menu-item">Edit</span>
-      <span class="win-menu-item">View</span><span class="win-menu-item">Help</span>
-    </div>
-    <div class="win-body">
-      <div class="about-content">
-        <div class="about-avatar">👩‍💻</div>
-        <div class="about-info">
-          <h2>RAOUA BEN HAMED</h2>
-          <div class="xp-info-row"><span class="xp-info-label">Role:</span> Software Eng. Student</div>
-          <div class="xp-info-row"><span class="xp-info-label">Location:</span> Tunisia</div>
-          <div class="xp-info-row"><span class="xp-info-label">GitHub:</span> <a href="https://github.com/raoua123" target="_blank">raoua123</a></div>
-          <div class="xp-info-row"><span class="xp-info-label">Status:</span> Open to opportunities</div>
+  );
+}
+
+type Tab = "about" | "projects" | "skills" | "contact";
+
+function Portfolio() {
+  const [tab, setTab] = useState<Tab>("about");
+  const [booted, setBooted] = useState(false);
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const fmt = (d: Date) =>
+    d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      {!booted && <BootScreen onDone={() => setBooted(true)} />}
+
+      <div className="scanlines" style={{
+        minHeight:'100vh',
+        background:'radial-gradient(ellipse at 50% 0%, #0d2040 0%, #0a0e1a 60%)',
+        fontFamily:"'Share Tech Mono',monospace",
+        animation: booted ? 'crt-flicker 12s ease infinite' : 'none',
+        opacity: booted ? 1 : 0,
+        transition:'opacity 0.5s',
+        position:'relative',
+      }}>
+        <StarField />
+        <div className="pixel-grid-bg" style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:1 }} />
+
+        <div style={{ position:'relative', zIndex:2, maxWidth:960, margin:'0 auto', padding:'24px 16px 40px' }}>
+
+          {/* Status bar */}
+          <div style={{
+            display:'flex', justifyContent:'space-between', alignItems:'center',
+            fontFamily:"'Press Start 2P',monospace", fontSize:7,
+            color:'var(--blue-pale)', marginBottom:16, padding:'6px 12px',
+            border:'1px solid var(--blue-dim)', background:'rgba(0,0,0,0.4)',
+          }}>
+            <span style={{ color:'var(--blue-glow)' }}>RAOUA.DEV v1.0</span>
+            <span>TUNIS, TN</span>
+            <span style={{ color:'var(--amber)' }}>{fmt(time)}<span className="blink">_</span></span>
+          </div>
+
+          {/* Main window */}
+          <div className="px-window" style={{ position:'relative', overflow:'hidden' }}>
+            <div className="scan-line" />
+
+            {/* Title bar */}
+            <div className="px-titlebar">
+              <div className="px-dots">
+                <div className="px-dot r" />
+                <div className="px-dot y" />
+                <div className="px-dot g" />
+              </div>
+              <span>~/raoua-ben-hamed/portfolio.exe</span>
+              <span style={{ marginLeft:'auto', color:'rgba(0,0,0,0.6)' }}>ALT+F4 TO EXIT</span>
+            </div>
+
+            {/* Tabs */}
+            <div style={{
+              display:'flex', borderBottom:'2px solid var(--blue-dim)',
+              background:'rgba(0,0,0,0.3)', overflowX:'auto',
+            }}>
+              {([
+                ["about",    "[ ABOUT ]"],
+                ["projects", "[ PROJECTS ]"],
+                ["skills",   "[ SKILLS ]"],
+                ["contact",  "[ CONTACT ]"],
+              ] as const).map(([k,l]) => (
+                <button key={k} className={`px-tab ${tab===k?'active':''}`} onClick={() => setTab(k)}>
+                  {l}
+                </button>
+              ))}
+            </div>
+
+            {/* Content */}
+            <div className="px-scroll" style={{ padding:'36px 32px', minHeight:480, maxHeight:'72vh', overflowY:'auto' }}>
+              {tab==="about"    && <About />}
+              {tab==="projects" && <Projects />}
+              {tab==="skills"   && <Skills />}
+              {tab==="contact"  && <Contact />}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={{
+            marginTop:12, textAlign:'center',
+            fontFamily:"'Press Start 2P',monospace", fontSize:6,
+            color:'var(--blue-dim)', letterSpacing:'0.1em',
+          }}>
+            (C) {new Date().getFullYear()} RAOUA BEN HAMED — ALL RIGHTS RESERVED
+          </div>
         </div>
       </div>
-      <div style="padding:0 20px 20px">
-        <p style="font-family:'VT323',monospace;font-size:16px;color:#333;line-height:1.7">
-          A software engineering student on a constant journey of learning, growth, and self-improvement.
-          Building fullstack web platforms, desktop games, and social apps — with Java, PHP, Symfony, TypeScript, and more.
-          Always curious. Always shipping.
+    </>
+  );
+}
+
+/* =================== ABOUT =================== */
+function About() {
+  return (
+    <div style={{ animation:'slideInLeft 0.5s ease' }}>
+      {/* Header row */}
+      <div style={{ marginBottom:32 }}>
+        <div style={{
+          fontFamily:"'Press Start 2P',monospace", fontSize:8,
+          color:'var(--blue-glow)', marginBottom:12, letterSpacing:'0.1em',
+        }}>
+          // PLAYER_ONE.DAT
+        </div>
+
+        <h1 style={{
+          fontFamily:"'VT323',monospace", fontSize:'clamp(44px,8vw,72px)',
+          color:'var(--blue-bright)', lineHeight:1.1, marginBottom:12,
+        }}>
+          <span className="glitch-wrap glow" data-text="RAOUA BEN HAMED">
+            RAOUA BEN HAMED
+          </span>
+        </h1>
+
+        <div style={{
+          fontFamily:"'Press Start 2P',monospace", fontSize:8,
+          color:'var(--amber)', marginBottom:24,
+        }}>
+          SOFTWARE ENGINEERING STUDENT <span className="blink">_</span>
+        </div>
+
+        <p style={{
+          color:'var(--blue-pale)', fontSize:14, lineHeight:1.8, maxWidth:600, marginBottom:16,
+        }}>
+          Second-year student at ISSATSO on a constant journey of learning,
+          growth, and self-improvement. I turn fuzzy ideas into real, working software —
+          from Java mini-games to full PHP platforms to polished frontends.
+        </p>
+
+        <p style={{ color:'#6ba3c4', fontSize:13, lineHeight:1.8, maxWidth:600, marginBottom:28 }}>
+          Collaborative, curious, detail-driven, and the kind of teammate who
+          actually enjoys code review.
         </p>
       </div>
-    </div>
-    <div class="win-statusbar"><span class="sb-section">1 object</span><span>Raoua Ben Hamed</span></div>
-  </div>
 
-  <!-- PROJECTS -->
-  <div class="win" id="win-projects" style="width:640px;height:420px;top:40px;left:200px">
-    <div class="win-titlebar" id="tb-projects">
-      <span class="win-icon-title">📁</span>
-      <span class="win-title">My Projects</span>
-      <div class="win-btns">
-        <div class="win-btn minimize" onclick="minimizeWin('projects')">_</div>
-        <div class="win-btn maximize" onclick="maximizeWin('projects')">□</div>
-        <div class="win-btn close" onclick="closeWin('projects')">✕</div>
-      </div>
-    </div>
-    <div class="win-menubar">
-      <span class="win-menu-item">File</span><span class="win-menu-item">Edit</span>
-      <span class="win-menu-item">View</span><span class="win-menu-item">Favorites</span>
-      <span class="win-menu-item">Tools</span><span class="win-menu-item">Help</span>
-    </div>
-    <div class="win-addrbar">
-      <label>Address</label>
-      <input type="text" value="C:\Users\Raoua\Projects" readonly/>
-    </div>
-    <div class="win-body" style="display:flex;height:100%;overflow:hidden">
-      <div class="proj-list-panel">
-        <div class="proj-list-item active" onclick="selectProject(0,this)"><span>📁</span> EventSphere</div>
-        <div class="proj-list-item" onclick="selectProject(1,this)"><span>📁</span> KnightVsDragons</div>
-        <div class="proj-list-item" onclick="selectProject(2,this)"><span>📁</span> Bobble</div>
-        <div class="proj-list-item" onclick="selectProject(3,this)"><span>📁</span> Mini_Projet</div>
-      </div>
-      <div class="proj-detail" id="proj-detail"></div>
-    </div>
-    <div class="win-statusbar"><span class="sb-section">4 objects</span><span id="proj-status">EventSphere selected</span></div>
-  </div>
-
-  <!-- SKILLS -->
-  <div class="win" id="win-skills" style="width:490px;height:430px;top:80px;left:160px">
-    <div class="win-titlebar" id="tb-skills">
-      <span class="win-icon-title">⚙</span>
-      <span class="win-title">Skills & Technologies</span>
-      <div class="win-btns">
-        <div class="win-btn minimize" onclick="minimizeWin('skills')">_</div>
-        <div class="win-btn maximize" onclick="maximizeWin('skills')">□</div>
-        <div class="win-btn close" onclick="closeWin('skills')">✕</div>
-      </div>
-    </div>
-    <div class="win-menubar">
-      <span class="win-menu-item">File</span><span class="win-menu-item">View</span><span class="win-menu-item">Help</span>
-    </div>
-    <div class="win-body">
-      <div class="skills-content">
-        <div class="skill-group">
-          <div class="skill-group-title">Programming Languages</div>
-          <div class="skill-bar-row"><span class="skill-bar-label">Java</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%"></div></div><span class="skill-bar-pct">85%</span></div>
-          <div class="skill-bar-row"><span class="skill-bar-label">PHP</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:80%"></div></div><span class="skill-bar-pct">80%</span></div>
-          <div class="skill-bar-row"><span class="skill-bar-label">JavaScript</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:75%"></div></div><span class="skill-bar-pct">75%</span></div>
-          <div class="skill-bar-row"><span class="skill-bar-label">TypeScript</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:65%"></div></div><span class="skill-bar-pct">65%</span></div>
-          <div class="skill-bar-row"><span class="skill-bar-label">Python</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%"></div></div><span class="skill-bar-pct">60%</span></div>
-          <div class="skill-bar-row"><span class="skill-bar-label">C</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:58%"></div></div><span class="skill-bar-pct">58%</span></div>
-          <div class="skill-bar-row"><span class="skill-bar-label">SQL</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:72%"></div></div><span class="skill-bar-pct">72%</span></div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-group-title">Frameworks & Tools</div>
-          <div class="skill-list">
-            <span class="skill-pill">Symfony 7</span><span class="skill-pill">React</span>
-            <span class="skill-pill">Docker</span><span class="skill-pill">PostgreSQL</span>
-            <span class="skill-pill">Git</span><span class="skill-pill">Nginx</span>
-            <span class="skill-pill">PHPUnit</span><span class="skill-pill">JWT Auth</span>
-            <span class="skill-pill">WebAuthn</span><span class="skill-pill">HTML / CSS</span>
+      {/* Stat cards */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:32 }}>
+        {[
+          { label:"UNIVERSITY",  val:"ISSATSO" },
+          { label:"YEAR",        val:"2ND YEAR" },
+          { label:"LANGUAGES",   val:"3 SPOKEN" },
+          { label:"STATUS",      val:"OPEN TO WORK" },
+        ].map((s,i) => (
+          <div key={i} style={{
+            border:'2px solid var(--blue-dim)',
+            padding:'14px 16px',
+            background:'rgba(0,170,255,0.04)',
+            animation:`slideInUp 0.5s ${i*0.1}s ease both`,
+          }}>
+            <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:6, color:'var(--blue-glow)', marginBottom:8 }}>
+              {s.label}
+            </div>
+            <div style={{ fontFamily:"'VT323',monospace", fontSize:22, color:'var(--cream)' }}>
+              {s.val}
+            </div>
           </div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-group-title">Human Languages</div>
-          <div class="skill-list">
-            <span class="skill-pill">Arabic — Native</span>
-            <span class="skill-pill">French — Fluent</span>
-            <span class="skill-pill">English — Fluent</span>
-          </div>
-        </div>
+        ))}
+      </div>
+
+      {/* Trait pills */}
+      <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:32 }}>
+        {["COLLABORATIVE","ALWAYS LEARNING","DETAIL-DRIVEN","PROBLEM SOLVER","SHIPS FAST"].map((b,i) => (
+          <span key={b} style={{
+            fontFamily:"'Press Start 2P',monospace", fontSize:6,
+            padding:'6px 12px',
+            border:'2px solid var(--blue-glow)',
+            color:'var(--blue-glow)',
+            background:'rgba(0,170,255,0.07)',
+            animation:`fadeIn 0.4s ${0.2+i*0.08}s ease both`,
+            letterSpacing:'0.05em',
+          }}>
+            {b}
+          </span>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+        <a href="https://github.com/raoua123" target="_blank" rel="noreferrer"
+          style={{
+            fontFamily:"'Press Start 2P',monospace", fontSize:8,
+            padding:'10px 20px',
+            background:'var(--blue-glow)', color:'var(--blue-dark)',
+            textDecoration:'none', border:'none',
+            transition:'box-shadow 0.2s, transform 0.2s',
+            display:'inline-block',
+          }}
+          onMouseEnter={e=>(e.currentTarget.style.boxShadow='0 0 20px var(--blue-glow)')}
+          onMouseLeave={e=>(e.currentTarget.style.boxShadow='none')}
+        >
+          GITHUB
+        </a>
+        <a href="mailto:raouabenhamed@gmail.com"
+          style={{
+            fontFamily:"'Press Start 2P',monospace", fontSize:8,
+            padding:'10px 20px',
+            background:'transparent', color:'var(--blue-glow)',
+            textDecoration:'none', border:'2px solid var(--blue-glow)',
+            transition:'background 0.2s',
+          }}
+          onMouseEnter={e=>(e.currentTarget.style.background='rgba(0,170,255,0.12)')}
+          onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
+        >
+          CONTACT ME
+        </a>
       </div>
     </div>
-    <div class="win-statusbar"><span>20+ technologies mastered</span></div>
-  </div>
+  );
+}
 
-  <!-- CONTACT -->
-  <div class="win" id="win-contact" style="width:360px;height:230px;top:120px;left:260px">
-    <div class="win-titlebar" id="tb-contact">
-      <span class="win-icon-title">✉</span>
-      <span class="win-title">Contact</span>
-      <div class="win-btns">
-        <div class="win-btn minimize" onclick="minimizeWin('contact')">_</div>
-        <div class="win-btn maximize" onclick="maximizeWin('contact')">□</div>
-        <div class="win-btn close" onclick="closeWin('contact')">✕</div>
-      </div>
-    </div>
-    <div class="win-menubar"><span class="win-menu-item">File</span><span class="win-menu-item">View</span></div>
-    <div class="win-body" style="padding:18px;display:flex;flex-direction:column;gap:12px">
-      <p style="font-family:'VT323',monospace;font-size:17px;color:#333;line-height:1.5">
-        Open to new opportunities, collaborations, and good conversations about tech.
-      </p>
-      <a href="https://github.com/raoua123" target="_blank" class="contact-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85.004 1.7.115 2.5.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z"/></svg>
-        github.com/raoua123
-      </a>
-    </div>
-    <div class="win-statusbar"><span>Ready</span></div>
-  </div>
+/* =================== PROJECTS =================== */
+type Project = { name:string; desc:string; long:string; lang:string; gradient:string; url:string; tags:string[]; year:string; };
 
-  <!-- NOTEPAD -->
-  <div class="win" id="win-notepad" style="width:370px;height:290px;top:140px;left:290px">
-    <div class="win-titlebar" id="tb-notepad">
-      <span class="win-icon-title">📄</span>
-      <span class="win-title">ReadMe.txt - Notepad</span>
-      <div class="win-btns">
-        <div class="win-btn minimize" onclick="minimizeWin('notepad')">_</div>
-        <div class="win-btn maximize" onclick="maximizeWin('notepad')">□</div>
-        <div class="win-btn close" onclick="closeWin('notepad')">✕</div>
-      </div>
-    </div>
-    <div class="win-menubar">
-      <span class="win-menu-item">File</span><span class="win-menu-item">Edit</span>
-      <span class="win-menu-item">Format</span><span class="win-menu-item">Help</span>
-    </div>
-    <div class="win-body">
-      <textarea class="notepad-content" readonly>Hi! Welcome to my portfolio.
-
-I'm Raoua Ben Hamed — software
-engineering student from Tunisia.
-
-Double-click icons to explore:
-
-[ About Me    ] - Who I am
-[ My Projects ] - What I've built
-[ Skills      ] - What I know
-[ Contact     ] - How to reach me
-[ GitHub      ] - My code
-
-Currently working on:
-  * EventSphere (PHP/Symfony)
-  * KnightVsDragons (Java)
-  * Always learning more...
-
-Thanks for visiting!
-— Raoua :)</textarea>
-    </div>
-  </div>
-
-</div>
-
-<!-- TASKBAR -->
-<div class="taskbar">
-  <div class="start-btn">
-    <svg width="20" height="20" viewBox="0 0 20 20">
-      <rect x="1" y="1" width="8" height="8" rx="1" fill="#f25022"/>
-      <rect x="11" y="1" width="8" height="8" rx="1" fill="#7fba00"/>
-      <rect x="1" y="11" width="8" height="8" rx="1" fill="#00a4ef"/>
-      <rect x="11" y="11" width="8" height="8" rx="1" fill="#ffb900"/>
-    </svg>
-    start
-  </div>
-  <div class="taskbar-divider"></div>
-  <div class="taskbar-apps" id="taskbar-apps"></div>
-  <div class="taskbar-clock" id="taskbar-clock">12:00</div>
-</div>
-
-<!-- TRAY BUBBLE -->
-<div class="tray-bubble" id="tray-bubble" onclick="this.style.display='none'">
-  Welcome! Double-click icons to explore. Click to dismiss.
-</div>
-
-<script>
-// ── PROJECTS DATA ──
-const projects = [
+const PROJECTS: Project[] = [
   {
-    name: "EventSphere",
-    type: "Web Platform — PHP / Symfony",
-    desc: "A modern event reservation platform for Tunisia. Discover hackathons, masterclasses and more. Features JWT authentication, WebAuthn/Passkeys, an admin dashboard with live stats, email sandboxing via Mailpit, and full Docker + Nginx deployment.",
-    tags: ["PHP 8.2", "Symfony 7", "PostgreSQL", "Docker", "JWT", "WebAuthn", "JavaScript"],
-    lang: "PHP", langColor: "#4F5D95",
-    link: "https://github.com/raoua123/EventSphere",
+    name:"EventSphere",
+    desc:"Event reservation platform",
+    long:"A full event-booking platform — browse events, book tickets, manage attendees. End-to-end PHP project with a clean, responsive UI and MySQL backend.",
+    lang:"PHP",
+    gradient:"linear-gradient(135deg,#003366,#0066cc)",
+    url:"https://github.com/raoua123/EventSphere",
+    tags:["PHP","MySQL","Full-stack"],
+    year:"2024",
   },
   {
-    name: "KnightVsDragons",
-    type: "Desktop Game — Java",
-    desc: "A retro 2D side-scrolling platformer written entirely in Java Swing. Battle dragons by answering Java quiz questions. Features pixel-art visuals, classic platformer movement, and a full OOP architecture.",
-    tags: ["Java", "Swing", "2D Graphics", "OOP", "Game Dev"],
-    lang: "Java", langColor: "#b07219",
-    link: "https://github.com/raoua123/KnightVsDragons",
+    name:"KnightVsDragons",
+    desc:"OOP Java mini-game",
+    long:"An object-oriented Java mini-game where a knight battles dragons. Built to practice clean class hierarchies, game loops, and input handling.",
+    lang:"Java",
+    gradient:"linear-gradient(135deg,#001a40,#004080)",
+    url:"https://github.com/raoua123/KnightVsDragons",
+    tags:["Java","OOP","Game"],
+    year:"2024",
   },
   {
-    name: "Bobble",
-    type: "Social + E-Commerce — TypeScript",
-    desc: "A social platform and e-commerce app for knitting and crochet enthusiasts. Share projects, organize patterns, and learn fiber arts. Built with a full TypeScript stack and modern architecture.",
-    tags: ["TypeScript", "Social Network", "E-commerce", "Full-Stack"],
-    lang: "TypeScript", langColor: "#3178c6",
-    link: "https://github.com/AttiaSabrine18/bobble",
-  },
-  {
-    name: "Mini_Projet",
-    type: "Academic Project — TypeScript",
-    desc: "A collaborative academic full-stack project built with TypeScript. Follows clean code principles, modern design patterns, and team-based development workflow.",
-    tags: ["TypeScript", "Full-Stack", "Team Project", "Academic"],
-    lang: "TypeScript", langColor: "#3178c6",
-    link: "https://github.com/AttiaSabrine18/Mini_Projet",
+    name:"MiniProjet",
+    desc:"Vanilla JavaScript build",
+    long:"A focused JavaScript build sharpening DOM manipulation, state management, and clean component patterns from scratch — no frameworks.",
+    lang:"JS",
+    gradient:"linear-gradient(135deg,#1a1a00,#4d4d00)",
+    url:"https://github.com/raoua123/MiniProjet",
+    tags:["JavaScript","DOM","Vanilla"],
+    year:"2024",
   },
 ];
 
-function renderProject(idx) {
-  const p = projects[idx];
-  document.getElementById('proj-detail').innerHTML = `
-    <div class="proj-detail-header">
-      <div class="proj-detail-icon">📁</div>
-      <div>
-        <div class="proj-detail-title">${p.name}</div>
-        <div class="proj-detail-sub">${p.type}</div>
+function Projects() {
+  const [active, setActive] = useState<Project|null>(null);
+  return (
+    <div style={{ animation:'fadeIn 0.4s ease' }}>
+      <div style={{ marginBottom:28 }}>
+        <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:7, color:'var(--blue-glow)', marginBottom:8 }}>
+          // $ ls ~/projects --long
+        </div>
+        <h2 style={{ fontFamily:"'VT323',monospace", fontSize:42, color:'var(--blue-bright)' }}>
+          THINGS I'VE BUILT
+        </h2>
+      </div>
+
+      {/* Table-style layout */}
+      <div style={{ border:'2px solid var(--blue-dim)' }}>
+        {/* Header */}
+        <div style={{
+          display:'grid', gridTemplateColumns:'1fr 100px 140px 80px',
+          padding:'8px 16px', background:'rgba(0,170,255,0.12)',
+          fontFamily:"'Press Start 2P',monospace", fontSize:6, color:'var(--blue-glow)',
+          borderBottom:'2px solid var(--blue-dim)', gap:8,
+        }}>
+          <span>PROJECT NAME</span>
+          <span>LANG</span>
+          <span>TAGS</span>
+          <span>YEAR</span>
+        </div>
+        {PROJECTS.map((p,i) => (
+          <div key={p.name} onClick={() => setActive(p)}
+            style={{
+              display:'grid', gridTemplateColumns:'1fr 100px 140px 80px',
+              padding:'16px', gap:8, cursor:'pointer',
+              borderBottom: i<PROJECTS.length-1 ? '1px solid var(--blue-dim)' : 'none',
+              background:'transparent', transition:'background 0.2s',
+              animation:`slideInUp 0.4s ${i*0.1}s ease both`,
+            }}
+            onMouseEnter={e=>(e.currentTarget.style.background='rgba(0,170,255,0.07)')}
+            onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
+          >
+            <div>
+              <div style={{ fontFamily:"'VT323',monospace", fontSize:22, color:'var(--cream)', marginBottom:3 }}>
+                {p.name}
+              </div>
+              <div style={{ fontSize:11, color:'#6ba3c4' }}>{p.desc}</div>
+            </div>
+            <div style={{
+              fontFamily:"'Press Start 2P',monospace", fontSize:7,
+              color:'var(--blue-glow)', border:'1px solid var(--blue-dim)',
+              padding:'4px 6px', alignSelf:'center', textAlign:'center',
+              background:'rgba(0,170,255,0.05)', height:'fit-content',
+            }}>
+              {p.lang}
+            </div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:4, alignSelf:'center' }}>
+              {p.tags.map(t => (
+                <span key={t} style={{
+                  fontFamily:"'Share Tech Mono',monospace", fontSize:9,
+                  padding:'2px 5px', border:'1px solid var(--blue-dim)',
+                  color:'#6ba3c4', background:'rgba(0,0,0,0.3)',
+                }}>{t}</span>
+              ))}
+            </div>
+            <div style={{
+              fontFamily:"'Press Start 2P',monospace", fontSize:7,
+              color:'var(--amber)', alignSelf:'center',
+            }}>
+              {p.year}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop:10, fontFamily:"'Press Start 2P',monospace", fontSize:6, color:'var(--blue-dim)' }}>
+        CLICK A ROW FOR DETAILS &gt;&gt;
+      </div>
+
+      {/* Modal */}
+      {active && (
+        <div
+          style={{
+            position:'fixed', inset:0, zIndex:50,
+            background:'rgba(0,0,0,0.75)',
+            display:'flex', alignItems:'center', justifyContent:'center', padding:20,
+          }}
+          onClick={() => setActive(null)}
+        >
+          <div className="px-window" style={{ maxWidth:520, width:'100%', animation:'slideInUp 0.25s ease' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="px-titlebar">
+              <div className="px-dots">
+                <div className="px-dot r" onClick={() => setActive(null)} style={{ cursor:'pointer' }} />
+                <div className="px-dot y" />
+                <div className="px-dot g" />
+              </div>
+              <span>{active.name}.README</span>
+            </div>
+            <div style={{
+              height:80,
+              background:active.gradient,
+              display:'flex', alignItems:'center', padding:'0 24px',
+              borderBottom:'2px solid var(--blue-dim)',
+            }}>
+              <span style={{ fontFamily:"'VT323',monospace", fontSize:36, color:'white',
+                textShadow:'0 0 20px rgba(255,255,255,0.5)' }}>
+                {active.name}
+              </span>
+            </div>
+            <div style={{ padding:'24px' }}>
+              <p style={{ color:'var(--blue-pale)', lineHeight:1.8, fontSize:13, marginBottom:16 }}>
+                {active.long}
+              </p>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:20 }}>
+                {active.tags.map(t => (
+                  <span key={t} style={{
+                    fontFamily:"'Press Start 2P',monospace", fontSize:7,
+                    padding:'4px 8px', border:'1px solid var(--blue-glow)',
+                    color:'var(--blue-glow)', background:'rgba(0,170,255,0.08)',
+                  }}>{t}</span>
+                ))}
+              </div>
+              <div style={{ display:'flex', gap:10 }}>
+                <a href={active.url} target="_blank" rel="noreferrer" style={{
+                  fontFamily:"'Press Start 2P',monospace", fontSize:7,
+                  padding:'8px 14px', background:'var(--blue-glow)', color:'var(--blue-dark)',
+                  textDecoration:'none', border:'none',
+                }}>
+                  VIEW ON GITHUB
+                </a>
+                <button onClick={() => setActive(null)} style={{
+                  fontFamily:"'Press Start 2P',monospace", fontSize:7,
+                  padding:'8px 14px', background:'transparent', color:'var(--blue-pale)',
+                  border:'2px solid var(--blue-dim)', cursor:'pointer',
+                }}>
+                  CLOSE [X]
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* =================== SKILLS =================== */
+const SKILLS_DATA = {
+  "LANGUAGES": [
+    { n:"Java",        lvl:85 },
+    { n:"PHP",         lvl:80 },
+    { n:"C",           lvl:70 },
+    { n:"JavaScript",  lvl:85 },
+    { n:"TypeScript",  lvl:75 },
+    { n:"HTML",        lvl:95 },
+    { n:"CSS",         lvl:90 },
+    { n:"SQL",         lvl:78 },
+    { n:"Python",      lvl:65 },
+  ],
+  "FRAMEWORKS": [
+    { n:"React",       lvl:80 },
+    { n:"Node.js",     lvl:70 },
+    { n:"Tailwind",    lvl:88 },
+    { n:"Bootstrap",   lvl:80 },
+    { n:"Laravel",     lvl:65 },
+  ],
+  "TOOLS": [
+    { n:"Git / GitHub",  lvl:88 },
+    { n:"VS Code",       lvl:95 },
+    { n:"MySQL",         lvl:80 },
+    { n:"Figma",         lvl:70 },
+    { n:"Linux",         lvl:65 },
+    { n:"Photoshop",     lvl:72 },
+    { n:"Illustrator",   lvl:65 },
+    { n:"Blender",       lvl:55 },
+  ],
+  "SECURITY": [
+    { n:"Network Security",    lvl:65 },
+    { n:"Web Security (OWASP)",lvl:70 },
+    { n:"Linux Hardening",     lvl:60 },
+    { n:"CTF / Challenges",    lvl:62 },
+  ],
+};
+
+function SkillBar({ n, lvl, delay = 0 }: { n:string; lvl:number; delay?:number }) {
+  const [filled, setFilled] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        setTimeout(() => setFilled(lvl), delay);
+        obs.disconnect();
+      }
+    });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [lvl, delay]);
+  return (
+    <div ref={ref} style={{ marginBottom:14 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
+        <span style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:12, color:'var(--blue-pale)' }}>{n}</span>
+        <span style={{ fontFamily:"'Press Start 2P',monospace", fontSize:7, color:'var(--blue-glow)' }}>{lvl}%</span>
+      </div>
+      <div className="pixel-bar">
+        <div className="pixel-bar-fill" style={{ width:`${filled}%` }} />
       </div>
     </div>
-    <p class="proj-detail-desc">${p.desc}</p>
-    <div class="proj-tags">${p.tags.map(t=>`<span class="proj-tag">${t}</span>`).join('')}</div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <a href="${p.link}" target="_blank" class="proj-link-btn">Open on GitHub &rarr;</a>
-      <span class="proj-lang-badge"><span class="lang-dot" style="background:${p.langColor}"></span>${p.lang}</span>
+  );
+}
+
+function Skills() {
+  const [cat, setCat] = useState<keyof typeof SKILLS_DATA>("LANGUAGES");
+  const LANGS = [
+    { name:"Arabic",  level:"Native",       pct:100 },
+    { name:"English", level:"Fluent",        pct:90  },
+    { name:"French",  level:"Intermediate",  pct:60  },
+  ];
+  return (
+    <div style={{ animation:'fadeIn 0.4s ease' }}>
+      <div style={{ marginBottom:24 }}>
+        <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:7, color:'var(--blue-glow)', marginBottom:8 }}>
+          // MY_TOOLKIT.INI
+        </div>
+        <h2 style={{ fontFamily:"'VT323',monospace", fontSize:42, color:'var(--blue-bright)' }}>
+          SKILLS &amp; STACK
+        </h2>
+      </div>
+
+      {/* Category selector */}
+      <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:24 }}>
+        {(Object.keys(SKILLS_DATA) as Array<keyof typeof SKILLS_DATA>).map(k => (
+          <button key={k} onClick={() => setCat(k)} style={{
+            fontFamily:"'Press Start 2P',monospace", fontSize:6,
+            padding:'7px 12px', cursor:'pointer',
+            background: cat===k ? 'var(--blue-glow)' : 'transparent',
+            color: cat===k ? 'var(--blue-dark)' : 'var(--blue-pale)',
+            border: cat===k ? '2px solid var(--blue-glow)' : '2px solid var(--blue-dim)',
+            transition:'all 0.15s',
+          }}>
+            {k}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'0 40px' }}>
+        {SKILLS_DATA[cat].map((s,i) => (
+          <SkillBar key={s.n} n={s.n} lvl={s.lvl} delay={i*60} />
+        ))}
+      </div>
+
+      {/* Marquee */}
+      <div className="marquee-wrap" style={{
+        margin:'32px -32px 0',
+        padding:'10px 0',
+        borderTop:'2px solid var(--blue-dim)',
+        borderBottom:'2px solid var(--blue-dim)',
+        background:'rgba(0,170,255,0.04)',
+      }}>
+        <div className="marquee-track" style={{ gap:40, fontFamily:"'Press Start 2P',monospace", fontSize:7, color:'var(--blue-pale)' }}>
+          {[...Array(2)].map((_,i) => (
+            <span key={i} style={{ display:'flex', gap:40 }}>
+              {["JAVA","PHP","C","REACT","TAILWIND","GIT","MYSQL","JAVASCRIPT","TYPESCRIPT","PYTHON","FIGMA","PHOTOSHOP","BLENDER","SECURITY","HTML/CSS"].map(t => (
+                <span key={t}>{t}</span>
+              ))}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Spoken languages */}
+      <div style={{ marginTop:32 }}>
+        <h3 style={{ fontFamily:"'Press Start 2P',monospace", fontSize:9, color:'var(--blue-glow)', marginBottom:16 }}>
+          LANGUAGES SPOKEN
+        </h3>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:12 }}>
+          {LANGS.map((l,i) => (
+            <div key={l.name} style={{
+              border:'2px solid var(--blue-dim)',
+              padding:'14px',
+              background:'rgba(0,170,255,0.04)',
+              animation:`slideInUp 0.4s ${i*0.12}s ease both`,
+            }}>
+              <div style={{ fontFamily:"'VT323',monospace", fontSize:22, color:'var(--cream)', marginBottom:4 }}>{l.name.toUpperCase()}</div>
+              <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:6, color:'var(--blue-dim)', marginBottom:10 }}>{l.level.toUpperCase()}</div>
+              <SkillBar n="" lvl={l.pct} delay={i*100} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
-  `;
-  document.getElementById('proj-status').textContent = p.name + ' selected';
+  );
 }
 
-function selectProject(idx, el) {
-  document.querySelectorAll('.proj-list-item').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  renderProject(idx);
+/* =================== CONTACT =================== */
+function Contact() {
+  const items = [
+    { k:"GITHUB",   v:"@raoua123",               href:"https://github.com/raoua123" },
+    { k:"EMAIL",    v:"raouabenhamed@gmail.com",  href:"mailto:raouabenhamed@gmail.com" },
+    { k:"LINKEDIN", v:"raoua-ben-hamed",          href:"https://www.linkedin.com/in/raoua-ben-hamed-835626368/" },
+    { k:"LOCATION", v:"Tunis, Tunisia",           href:"#" },
+  ];
+  return (
+    <div style={{ animation:'fadeIn 0.4s ease', maxWidth:600, margin:'0 auto', textAlign:'center' }}>
+      <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:7, color:'var(--blue-glow)', marginBottom:12 }}>
+        // ESTABLISH_CONNECTION.EXE
+      </div>
+      <h2 style={{ fontFamily:"'VT323',monospace", fontSize:'clamp(36px,6vw,56px)', color:'var(--blue-bright)', lineHeight:1.1, marginBottom:16 }}>
+        LET'S BUILD SOMETHING<br/>
+        <span className="glow-amber" style={{ color:'var(--amber)' }}>TOGETHER</span>
+      </h2>
+      <p style={{ color:'var(--blue-pale)', fontSize:13, marginBottom:32, lineHeight:1.8 }}>
+        Open to internships, collaborations, and any project where I can learn and ship real things.
+      </p>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, textAlign:'left', marginBottom:32 }}>
+        {items.map((item,i) => (
+          <a key={item.k} href={item.href}
+            target={item.href.startsWith('http') ? '_blank' : undefined}
+            rel="noreferrer"
+            style={{
+              border:'2px solid var(--blue-dim)',
+              padding:'14px 16px',
+              background:'rgba(0,170,255,0.04)',
+              textDecoration:'none',
+              display:'block',
+              transition:'border-color 0.2s, background 0.2s',
+              animation:`slideInUp 0.4s ${i*0.1}s ease both`,
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.borderColor='var(--blue-glow)';
+              el.style.background='rgba(0,170,255,0.1)';
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.borderColor='var(--blue-dim)';
+              el.style.background='rgba(0,170,255,0.04)';
+            }}
+          >
+            <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:6, color:'var(--blue-glow)', marginBottom:6 }}>
+              {item.k}
+            </div>
+            <div style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:13, color:'var(--cream)', wordBreak:'break-all' }}>
+              {item.v}
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <a href="mailto:raouabenhamed@gmail.com" style={{
+        fontFamily:"'Press Start 2P',monospace", fontSize:8,
+        padding:'12px 28px',
+        display:'inline-block',
+        background:'var(--blue-glow)', color:'var(--blue-dark)',
+        textDecoration:'none',
+        transition:'box-shadow 0.2s, transform 0.2s',
+      }}
+        onMouseEnter={e => {
+          const el = e.currentTarget as HTMLElement;
+          el.style.boxShadow='0 0 28px var(--blue-glow)';
+          el.style.transform='scale(1.04)';
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget as HTMLElement;
+          el.style.boxShadow='none';
+          el.style.transform='scale(1)';
+        }}
+      >
+        SEND MESSAGE
+      </a>
+    </div>
+  );
 }
-
-renderProject(0);
-
-// ── WINDOW MANAGEMENT ──
-let zTop = 200;
-
-function bringToFront(id) {
-  const w = document.getElementById('win-' + id);
-  if (w) { zTop++; w.style.zIndex = zTop; }
-}
-
-function openWin(id) {
-  const w = document.getElementById('win-' + id);
-  if (!w) return;
-  if (w.classList.contains('open') && !w.classList.contains('minimized')) {
-    bringToFront(id); return;
-  }
-  w.classList.remove('minimized');
-  w.classList.add('open');
-  bringToFront(id);
-  updateTaskbar();
-  document.getElementById('hint').style.display = 'none';
-}
-
-function closeWin(id) {
-  const w = document.getElementById('win-' + id);
-  if (w) { w.classList.remove('open', 'minimized'); }
-  updateTaskbar();
-}
-
-function minimizeWin(id) {
-  const w = document.getElementById('win-' + id);
-  if (w) { w.classList.add('minimized'); }
-  updateTaskbar();
-}
-
-function maximizeWin(id) {
-  const w = document.getElementById('win-' + id);
-  if (!w) return;
-  if (w._maximized) {
-    w.style.top = w._ot; w.style.left = w._ol;
-    w.style.width = w._ow; w.style.height = w._oh;
-    w._maximized = false;
-  } else {
-    w._ot = w.style.top; w._ol = w.style.left;
-    w._ow = w.style.width; w._oh = w.style.height;
-    w.style.top = '0'; w.style.left = '0';
-    w.style.width = '100%';
-    w.style.height = document.getElementById('windows-area').offsetHeight + 'px';
-    w._maximized = true;
-  }
-}
-
-function updateTaskbar() {
-  const names = {about:'About Me', projects:'My Projects', skills:'Skills', contact:'Contact', notepad:'ReadMe.txt'};
-  const icons = {about:'🖥', projects:'📁', skills:'⚙', contact:'✉', notepad:'📄'};
-  const apps = document.getElementById('taskbar-apps');
-  apps.innerHTML = '';
-  ['about','projects','skills','contact','notepad'].forEach(id => {
-    const w = document.getElementById('win-' + id);
-    if (w && w.classList.contains('open')) {
-      const btn = document.createElement('div');
-      const minimized = w.classList.contains('minimized');
-      btn.className = 'taskbar-app' + (minimized ? '' : ' active');
-      btn.textContent = icons[id] + ' ' + names[id];
-      btn.onclick = () => {
-        if (minimized) { w.classList.remove('minimized'); bringToFront(id); }
-        else { minimizeWin(id); }
-        updateTaskbar();
-      };
-      apps.appendChild(btn);
-    }
-  });
-}
-
-// Click window to bring to front
-document.querySelectorAll('.win').forEach(w => {
-  w.addEventListener('mousedown', () => bringToFront(w.id.replace('win-','')));
-});
-
-// ── DRAG ──
-['about','projects','skills','contact','notepad'].forEach(id => {
-  const tb = document.getElementById('tb-' + id);
-  const win = document.getElementById('win-' + id);
-  if (!tb || !win) return;
-  let dragging = false, ox = 0, oy = 0;
-  tb.addEventListener('mousedown', e => {
-    if (e.target.classList.contains('win-btn')) return;
-    if (win._maximized) return;
-    dragging = true;
-    ox = e.clientX - win.offsetLeft;
-    oy = e.clientY - win.offsetTop;
-    bringToFront(id);
-    e.preventDefault();
-  });
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    win.style.left = Math.max(0, e.clientX - ox) + 'px';
-    win.style.top = Math.max(0, e.clientY - oy) + 'px';
-  });
-  document.addEventListener('mouseup', () => { dragging = false; });
-});
-
-// ── CLOCK ──
-function updateClock() {
-  const now = new Date();
-  let h = now.getHours(), m = now.getMinutes();
-  const ap = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  document.getElementById('taskbar-clock').innerHTML =
-    h + ':' + String(m).padStart(2,'0') + ' ' + ap + '<br><span style="font-size:11px">' +
-    now.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + '</span>';
-}
-updateClock(); setInterval(updateClock, 15000);
-
-// ── SPLASH ──
-setTimeout(() => {
-  const s = document.getElementById('splash');
-  s.classList.add('fade-out');
-  setTimeout(() => { s.style.display = 'none'; }, 900);
-}, 2800);
-
-// Auto-open projects after splash
-setTimeout(() => { openWin('projects'); }, 3400);
-</script>
-</body>
-</html>
