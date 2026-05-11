@@ -110,10 +110,8 @@ function About() {
           journey of learning, growth, and self-improvement.
         </p>
         <p className="text-base leading-relaxed text-[color:var(--ink-deep)]/85">
-          I love turning fuzzy ideas into real, working software — whether
-          that's a small Java mini-game, a full PHP event-booking platform, or
-          a polished frontend. Collaborative, curious, detail-driven, and the
-          kind of teammate who actually enjoys code review.
+          I turn ideas into real software. Collaborative, curious, detail-driven, 
+    and I actually enjoy code review.
         </p>
 
         <div className="flex flex-wrap gap-2 pt-2">
