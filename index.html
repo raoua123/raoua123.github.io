@@ -1,559 +1,827 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>DHEEMAN · XP PRO STUDIO</title>
-  <style>
-    /* RESET + CLASSIC WINDOWS XP VIBE */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none; /* retro "kiosk" feel, but text can be selected if needed */
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Raoua Ben Hamed · Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      background: #3a6ea5; /* fallback, but we use full image */
-      font-family: 'Tahoma', 'Segoe UI', 'Lucida Grande', 'MS Sans Serif', sans-serif;
-      overflow-x: hidden;
-      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="2,2 14,8 2,14 4,8" fill="white" stroke="black" stroke-width="0.5"/></svg>') 4 4, auto;
-    }
+body {
+  min-height: 100vh;
+  font-family: 'Pixelify Sans', monospace;
+  overflow-x: hidden;
+  background: #3a6b35;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpolygon points='0,0 0,14 4,11 6,16 8,15 6,10 10,10' fill='white' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 0 0, auto;
+}
 
-    /* WINDOWS XP GRASS BACKGROUND - THE BLISS WALLPAPER */
-    .xp-wallpaper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -2;
-      filter: brightness(1.02) contrast(1.05);
-    }
+/* XP Bliss background */
+.xp-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 100%, #3a7d2c 0%, #4e9e3a 30%, #6ac14e 55%, #8fd46a 65%, transparent 75%),
+    radial-gradient(ellipse 80% 40% at 30% 85%, #2d6b22 0%, #3d8a2e 40%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 70% 90%, #4a9635 0%, transparent 60%),
+    linear-gradient(180deg, #4fa3e0 0%, #6dbde8 20%, #9dd4f0 35%, #b8e0f7 42%, #cdeafc 48%, #ddf1fd 52%, #f0f8ff 58%, #e8f5e8 65%, #c8e89a 75%, #8fcf58 85%, #5aad35 95%, #3d8a28 100%);
+}
 
-    /* classic sky gradient overlay to match bliss mood */
-    .xp-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at top, rgba(70,130,200,0.08), transparent);
-      pointer-events: none;
-      z-index: -1;
-    }
+.xp-sun {
+  position: fixed; top: 8%; right: 15%; z-index: 1;
+  width: 80px; height: 80px;
+  background: radial-gradient(circle, rgba(255,255,220,0.9) 0%, rgba(255,255,150,0.4) 40%, transparent 70%);
+  border-radius: 50%; filter: blur(2px); pointer-events: none;
+  animation: sunPulse 4s ease-in-out infinite;
+}
+@keyframes sunPulse { 0%,100%{transform:scale(1);opacity:0.9} 50%{transform:scale(1.08);opacity:1} }
 
-    /* main content wrapper - makes text readable but retains transparency */
-    .content-wrapper {
-      position: relative;
-      z-index: 10;
-      backdrop-filter: blur(2px);
-      background-color: rgba(245, 245, 220, 0.2); /* subtle beige glass */
-      min-height: 100vh;
-    }
+.cloud { position: fixed; z-index: 1; pointer-events: none; animation: drift linear infinite; }
+.cloud svg { fill: rgba(255,255,255,0.88); filter: drop-shadow(0 4px 12px rgba(255,255,255,0.3)); }
+@keyframes drift { from{transform:translateX(-200px)} to{transform:translateX(110vw)} }
 
-    /* classic windows xp taskbar inspired header (but not a real taskbar, just retro nav) */
-    .xp-nav {
-      background: linear-gradient(180deg, #245edb 0%, #0f3a8e 100%);
-      border-bottom: 2px solid #ffd966;
-      padding: 6px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      font-family: 'Tahoma', sans-serif;
-    }
-    .nav-start {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #3a6ea5;
-      padding: 4px 18px 4px 12px;
-      border-radius: 0px;
-      border-top-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-      box-shadow: inset -1px -1px 0 #0f3a8e, inset 1px 1px 0 #7fb4ff;
-      cursor: pointer;
-    }
-    .nav-start span {
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      text-shadow: 1px 1px 0 #1e3c72;
-      letter-spacing: 1px;
-    }
-    .nav-start img {
-      width: 20px;
-      filter: drop-shadow(0 1px 0 #1f3f6e);
-    }
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
-    .nav-links a {
-      color: #fff5e0;
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: bold;
-      padding: 4px 8px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 12px;
-      transition: all 0.1s linear;
-      letter-spacing: 0.5px;
-    }
-    .nav-links a:hover {
-      background: #ffd966;
-      color: #1e3c72;
-      box-shadow: inset 0 0 2px #fff;
-    }
-    .nav-time {
-      background: #1e2f3e;
-      padding: 4px 12px;
-      border-radius: 16px;
-      color: #c3e88d;
-      font-family: monospace;
-      font-size: 0.7rem;
-      font-weight: bold;
-      box-shadow: inset 0 0 2px #4a6e8a;
-    }
+/* ── TASKBAR ── */
+.taskbar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+  height: 40px;
+  background: linear-gradient(180deg, #1f6bcc 0%, #245eae 4%, #1652a8 8%, #1960c8 50%, #1454b0 92%, #0f44a0 100%);
+  border-top: 2px solid #4a90d9;
+  display: flex; align-items: center;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.4);
+}
+.start-btn {
+  height: 36px; margin: 2px 4px;
+  background: linear-gradient(180deg, #5bb85b 0%, #3ea83e 15%, #2d9a2d 50%, #258025 85%, #1e6f1e 100%);
+  border: 1px solid #1a5c1a; border-radius: 0 14px 14px 0;
+  padding: 0 16px 0 10px; display: flex; align-items: center; gap: 6px;
+  font-family: 'VT323', monospace; font-size: 18px;
+  color: white; font-weight: bold; font-style: italic;
+  cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 1px 0 4px rgba(0,0,0,0.3);
+}
+.start-btn:hover { filter: brightness(1.1); }
+.taskbar-divider { width: 2px; height: 28px; margin: 0 4px; background: linear-gradient(180deg, transparent, #4a90d9, transparent); }
+.taskbar-apps { display: flex; gap: 2px; flex: 1; padding: 0 4px; overflow: hidden; }
+.taskbar-app {
+  height: 30px; padding: 0 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 2px;
+  font-family: 'VT323', monospace; font-size: 13px; color: white;
+  display: flex; align-items: center; gap: 4px; cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5); white-space: nowrap;
+  transition: background 0.15s; max-width: 140px;
+}
+.taskbar-app:hover { background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%); }
+.taskbar-app.active { background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.1) 100%); box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3); }
+.taskbar-clock {
+  padding: 0 12px; color: white; font-family: 'VT323', monospace; font-size: 15px;
+  text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  border-left: 1px solid rgba(255,255,255,0.2); min-width: 80px;
+}
 
-    /* main container */
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 32px 24px 60px;
-    }
+/* ── DESKTOP ICONS ── */
+.desktop-icons { position: fixed; top: 20px; left: 20px; z-index: 10; display: flex; flex-direction: column; gap: 14px; }
+.desktop-icon {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 74px; cursor: pointer; padding: 4px;
+  border: 1px solid transparent; border-radius: 2px;
+  transition: border-color 0.1s, background 0.1s; text-decoration: none;
+  user-select: none;
+}
+.desktop-icon:hover { background: rgba(49,106,197,0.35); border-color: rgba(49,106,197,0.6); }
+.desktop-icon:active { background: rgba(49,106,197,0.6); }
+.di-img { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+.di-label {
+  font-family: 'VT323', monospace; font-size: 13px; color: white;
+  text-align: center; line-height: 1.2; word-break: break-word;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), -1px -1px 3px rgba(0,0,0,0.9),
+               1px -1px 3px rgba(0,0,0,0.9), -1px 1px 3px rgba(0,0,0,0.9);
+}
 
-    /* profile hero card */
-    .profile-card {
-      background: rgba(255, 251, 235, 0.85);
-      backdrop-filter: blur(8px);
-      border-radius: 28px;
-      padding: 32px 28px;
-      margin-bottom: 48px;
-      box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
-      border: 1px solid rgba(255,241,184,0.9);
-      transition: transform 0.2s;
-    }
-    .profile-flex {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 32px;
-    }
-    .avatar {
-      background: #d4c9a6;
-      border-radius: 100%;
-      width: 120px;
-      height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.5rem;
-      background: #ab915b;
-      box-shadow: inset 0 0 0 3px #f7e5b5, 0 8px 12px rgba(0,0,0,0.2);
-      font-family: monospace;
-      color: #2b2b1f;
-    }
-    .info h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      color: #1f2f1c;
-      text-shadow: 2px 2px 0 #cfb87c;
-      font-family: 'Trebuchet MS', 'Tahoma', sans-serif;
-    }
-    .info p {
-      color: #1f2f1a;
-      font-weight: bold;
-      background: rgba(255,245,190,0.6);
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      margin-top: 8px;
-    }
-    .contact-details {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 12px;
-      color: #2f4225;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-    .contact-details span {
-      background: #e9dfb5;
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
-    .bio {
-      margin-top: 20px;
-      line-height: 1.5;
-      font-size: 0.95rem;
-      background: #fffef7d9;
-      padding: 14px 18px;
-      border-radius: 20px;
-      border-left: 8px solid #679e42;
-    }
+/* ── WINDOWS ── */
+.win {
+  position: absolute; background: #ece9d8;
+  border: 2px solid #0054e3; border-radius: 6px 6px 4px 4px;
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.8);
+  min-width: 300px; pointer-events: all;
+  display: none; flex-direction: column; overflow: hidden;
+}
+.win.open { display: flex; }
+.win.minimized { display: none !important; }
 
-    /* Projects section - ONLY projects, no dashboard stuff */
-    .section-title {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #1a2f0e;
-      background: #fffaecdd;
-      display: inline-block;
-      padding: 6px 28px;
-      border-radius: 40px;
-      margin-bottom: 32px;
-      backdrop-filter: blur(4px);
-      border: 1px solid #ddcfa0;
-      box-shadow: 3px 3px 0 #808080;
-      font-family: 'Trebuchet MS', 'Tahoma', sans-serif;
-    }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 28px;
-    }
-    .xp-project-card {
-      background: rgba(255, 251, 225, 0.9);
-      backdrop-filter: blur(6px);
-      border-radius: 16px;
-      border: 1px solid #fce38d;
-      padding: 20px 22px;
-      transition: all 0.2s ease;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-    }
-    .xp-project-card:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
-      background: #fffff0f2;
-    }
-    .project-title {
-      font-size: 1.65rem;
-      font-weight: 800;
-      color: #2c4b1e;
-      letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 2px dotted #bbaa66;
-      margin-bottom: 12px;
-      padding-bottom: 6px;
-    }
-    .project-desc {
-      font-size: 0.85rem;
-      color: #2f3e26;
-      line-height: 1.5;
-      margin: 12px 0;
-    }
-    .tech-stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 14px 0;
-    }
-    .tech-badge {
-      background: #4b6e2e;
-      color: #fffddf;
-      font-size: 0.7rem;
-      padding: 4px 12px;
-      border-radius: 30px;
-      font-weight: bold;
-      font-family: monospace;
-      letter-spacing: 0.3px;
-    }
-    .project-link-btn {
-      display: inline-block;
-      background: #f1c232;
-      padding: 8px 18px;
-      border-radius: 30px;
-      text-decoration: none;
-      color: #1f3a0a;
-      font-weight: bold;
-      font-size: 0.75rem;
-      margin-top: 8px;
-      transition: 0.1s linear;
-      border: 1px solid #fde48c;
-    }
-    .project-link-btn:hover {
-      background: #f9b81b;
-      box-shadow: inset 0 0 4px #ffefb0;
-    }
+.win-titlebar {
+  height: 28px;
+  background: linear-gradient(180deg, #0058ee 0%, #2874e8 8%, #1560e0 45%, #0950d4 92%, #0644c0 100%);
+  display: flex; align-items: center; padding: 0 4px; gap: 4px;
+  cursor: move; border-radius: 4px 4px 0 0; flex-shrink: 0;
+}
+.win-icon-title { font-size: 14px; width: 16px; text-align: center; flex-shrink: 0; }
+.win-title {
+  flex: 1; font-family: 'VT323', monospace; font-size: 15px;
+  color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+  letter-spacing: 0.03em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.win-btns { display: flex; gap: 2px; flex-shrink: 0; }
+.win-btn {
+  width: 21px; height: 21px; border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.3);
+  font-family: 'VT323', monospace; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: black; line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); flex-shrink: 0;
+}
+.win-btn.minimize { background: linear-gradient(180deg, #f5d060 0%, #e8b800 50%, #d4a800 100%); }
+.win-btn.maximize { background: linear-gradient(180deg, #80dc80 0%, #40c040 50%, #30a830 100%); }
+.win-btn.close    { background: linear-gradient(180deg, #ff7070 0%, #e83030 50%, #cc2020 100%); color: white; font-size: 18px; }
+.win-btn:hover { filter: brightness(1.15); }
+.win-btn:active { filter: brightness(0.9); }
 
-    /* SKILLS SECTION (added extra software fields + languages, no emojis) fun but clean */
-    .skills-section {
-      margin-top: 60px;
-      margin-bottom: 40px;
-      background: rgba(235, 224, 180, 0.7);
-      backdrop-filter: blur(5px);
-      border-radius: 36px;
-      padding: 28px 24px;
-      border: 1px solid #ffe2a4;
-    }
-    .skills-title {
-      font-size: 1.7rem;
-      font-weight: bold;
-      color: #1d3513;
-      margin-bottom: 20px;
-      display: flex;
-      gap: 8px;
-      align-items: baseline;
-    }
-    .skills-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 16px;
-    }
-    .skill-item {
-      background: #313f2b;
-      color: #ebddb0;
-      padding: 6px 18px;
-      border-radius: 40px;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      font-size: 0.85rem;
-      transition: 0.1s;
-      border: 1px solid #aaaf77;
-    }
-    .skill-item:hover {
-      background: #567d32;
-      color: white;
-      transform: scale(1.02);
-    }
-    .category-skill {
-      font-weight: bold;
-      color: #2c461c;
-      background: #fae984b0;
-      padding: 2px 12px;
-      border-radius: 20px;
-      margin-right: 8px;
-      font-size: 0.7rem;
-    }
+.win-menubar {
+  height: 22px; background: #ece9d8; border-bottom: 1px solid #aca899;
+  display: flex; align-items: center; padding: 0 4px; gap: 2px; flex-shrink: 0;
+}
+.win-menu-item {
+  font-family: 'VT323', monospace; font-size: 14px; color: #000;
+  padding: 2px 8px; cursor: pointer; border-radius: 2px;
+}
+.win-menu-item:hover { background: #316ac5; color: white; }
 
-    /* footer win xp style */
-    .winxp-footer {
-      background: #196c3eaa;
-      backdrop-filter: blur(12px);
-      margin-top: 48px;
-      padding: 16px 32px;
-      text-align: center;
-      border-top: 2px solid #ffcf6e;
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: #1a2b12;
-      border-radius: 30px 30px 0 0;
-    }
+.win-addrbar {
+  height: 28px; background: #ece9d8; border-bottom: 1px solid #aca899;
+  display: flex; align-items: center; padding: 0 6px; gap: 6px; flex-shrink: 0;
+}
+.win-addrbar label { font-family: 'VT323', monospace; font-size: 13px; color: #000; }
+.win-addrbar input {
+  flex: 1; height: 20px; border: 1px solid #7f9db9; background: white;
+  font-family: 'VT323', monospace; font-size: 13px; padding: 0 4px; outline: none;
+}
 
-    /* remove any dashboard/metrics, i don't show project counts or stats */
-    /* adding programming languages + fields: extended list */
-    @media (max-width: 700px) {
-      .profile-flex { flex-direction: column; text-align: center; }
-      .container { padding: 20px; }
-      .projects-grid { grid-template-columns: 1fr; }
-    }
-    /* quirky windows XP cursor/glow */
-    ::selection {
-      background: #f0c674;
-      color: #2c2b1f;
-    }
-  </style>
+.win-body { flex: 1; overflow-y: auto; overflow-x: hidden; background: white; border-top: 1px solid #aca899; }
+.win-body::-webkit-scrollbar { width: 16px; }
+.win-body::-webkit-scrollbar-track { background: #f0ede3; border: 1px solid #aca899; }
+.win-body::-webkit-scrollbar-thumb { background: linear-gradient(90deg, #c0bdb0, #d0cdc0); border: 1px solid #888; }
+
+.win-statusbar {
+  height: 22px; background: #ece9d8; border-top: 1px solid #aca899;
+  display: flex; align-items: center; padding: 0 8px;
+  font-family: 'VT323', monospace; font-size: 13px; color: #444; flex-shrink: 0; gap: 8px;
+}
+.sb-section { border-right: 1px solid #aca899; padding-right: 8px; }
+
+/* ── ABOUT ── */
+.about-content { padding: 20px; display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; }
+.about-avatar {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, #316ac5, #0040aa);
+  border: 3px solid #7f9db9; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 42px; flex-shrink: 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.about-info h2 { font-family: 'Press Start 2P', monospace; font-size: 9px; color: #003399; margin-bottom: 10px; line-height: 1.5; }
+.xp-info-row { display: flex; gap: 8px; font-family: 'VT323', monospace; font-size: 16px; color: #333; margin-bottom: 5px; }
+.xp-info-label { color: #555; min-width: 80px; }
+.about-info a { color: #0055cc; }
+
+/* ── SKILLS ── */
+.skills-content { padding: 16px; }
+.skill-group { margin-bottom: 20px; }
+.skill-group-title {
+  font-family: 'Press Start 2P', monospace; font-size: 7px; color: #316ac5;
+  margin-bottom: 10px; padding-bottom: 4px; border-bottom: 1px solid #aca899; text-transform: uppercase;
+}
+.skill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-pill {
+  padding: 3px 10px; background: linear-gradient(180deg, #f0ede3 0%, #ddd9c4 100%);
+  border: 1px solid #aca899; border-radius: 2px;
+  font-family: 'VT323', monospace; font-size: 15px; color: #000;
+  box-shadow: 1px 1px 0 white inset, -1px -1px 0 #888 inset;
+  cursor: default; transition: all 0.1s;
+}
+.skill-pill:hover { background: linear-gradient(180deg, #316ac5, #0040aa); color: white; border-color: #003399; }
+.skill-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.skill-bar-label { font-family: 'VT323', monospace; font-size: 15px; min-width: 110px; }
+.skill-bar-track {
+  flex: 1; height: 14px; background: #c0bdb0; border: 1px solid #888;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3); position: relative; border-radius: 1px;
+}
+.skill-bar-fill {
+  height: 100%; background: linear-gradient(180deg, #4a90d9 0%, #316ac5 50%, #1a5aab 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); transition: width 1.2s ease; border-radius: 1px 0 0 1px;
+}
+.skill-bar-pct { font-family: 'VT323', monospace; font-size: 13px; color: #333; min-width: 36px; }
+
+/* ── PROJECTS ── */
+.proj-sidebar { display: flex; height: 100%; }
+.proj-list-panel {
+  width: 170px; flex-shrink: 0; background: #f5f3ea;
+  border-right: 1px solid #aca899; overflow-y: auto;
+}
+.proj-list-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  cursor: pointer; border-bottom: 1px solid #e0ddd0;
+  font-family: 'VT323', monospace; font-size: 15px; color: #000;
+  transition: background 0.1s;
+}
+.proj-list-item:hover { background: #d4e4f7; }
+.proj-list-item.active { background: #316ac5; color: white; }
+.proj-detail { flex: 1; padding: 16px; overflow-y: auto; }
+.proj-detail-header {
+  display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px;
+  padding-bottom: 10px; border-bottom: 1px solid #aca899;
+}
+.proj-detail-icon { font-size: 36px; flex-shrink: 0; }
+.proj-detail-title { font-family: 'Press Start 2P', monospace; font-size: 8px; color: #003399; margin-bottom: 6px; line-height: 1.5; }
+.proj-detail-sub { font-family: 'VT323', monospace; font-size: 14px; color: #555; }
+.proj-detail-desc { font-family: 'VT323', monospace; font-size: 16px; color: #222; line-height: 1.6; margin-bottom: 14px; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.proj-tag { padding: 2px 8px; background: #ddeeff; border: 1px solid #7f9db9; font-family: 'VT323', monospace; font-size: 13px; color: #003399; border-radius: 2px; }
+.proj-link-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px;
+  background: linear-gradient(180deg, #f0ede3 0%, #ddd9c4 100%);
+  border: 1px solid #aca899; box-shadow: 1px 1px 0 white inset, -1px -1px 0 #888 inset;
+  font-family: 'VT323', monospace; font-size: 15px; color: #000;
+  text-decoration: none; cursor: pointer; border-radius: 2px; transition: all 0.1s;
+}
+.proj-link-btn:hover { background: linear-gradient(180deg, #316ac5, #0040aa); color: white; border-color: #003399; }
+.proj-lang-badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px;
+  border: 1px solid #aca899; font-family: 'VT323', monospace; font-size: 13px; color: #333;
+  background: #f5f3ea; border-radius: 2px; margin-left: 8px;
+}
+.lang-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+/* ── NOTEPAD ── */
+.notepad-content {
+  width: 100%; height: 100%; resize: none; border: none; outline: none;
+  font-family: 'VT323', monospace; font-size: 16px; color: #000;
+  background: white; padding: 8px; line-height: 1.6;
+}
+
+/* ── CONTACT ── */
+.contact-link {
+  font-family: 'VT323', monospace; font-size: 16px; color: #0055cc;
+  text-decoration: none; display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border: 1px solid #aca899; background: #f5f3ea;
+  border-radius: 2px; transition: all 0.1s;
+}
+.contact-link:hover { background: #316ac5; color: white; border-color: #003399; }
+
+/* ── SPLASH ── */
+.xp-splash {
+  position: fixed; inset: 0; z-index: 9999; background: #003399;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+  transition: opacity 0.8s ease;
+}
+.xp-splash.fade-out { opacity: 0; pointer-events: none; }
+.xp-flag { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 64px; height: 64px; margin-bottom: 12px; }
+.xp-flag div { border-radius: 3px; }
+.f1{background:#f25022} .f2{background:#7fba00} .f3{background:#00a4ef} .f4{background:#ffb900}
+.xp-splash-text { font-family: 'VT323', monospace; font-size: 52px; color: white; font-style: italic; }
+.xp-splash-sub { font-family: 'VT323', monospace; font-size: 18px; color: rgba(255,255,255,0.7); letter-spacing: 0.1em; }
+.xp-progress-track { width: 220px; height: 14px; border: 1px solid rgba(255,255,255,0.4); border-radius: 7px; background: rgba(0,0,0,0.3); overflow: hidden; }
+.xp-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4da6ff, #80c4ff); border-radius: 7px; animation: xpLoad 2.4s ease forwards; }
+@keyframes xpLoad { 0%{width:0%} 30%{width:25%} 60%{width:60%} 80%{width:82%} 100%{width:100%} }
+.xp-loading-text { font-family: 'VT323', monospace; font-size: 15px; color: rgba(255,255,255,0.6); }
+
+/* Hint */
+.dblclick-hint {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-family: 'VT323', monospace; font-size: 20px; color: white;
+  text-align: center; text-shadow: 1px 1px 5px rgba(0,0,0,0.9), -1px -1px 5px rgba(0,0,0,0.9);
+  pointer-events: none; z-index: 5; animation: hintPulse 3s ease-in-out infinite;
+}
+@keyframes hintPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+/* Tooltip bubble */
+.tray-bubble {
+  position: fixed; bottom: 50px; right: 16px; z-index: 500;
+  background: #ffffe1; border: 1px solid #888; padding: 8px 12px;
+  font-family: 'VT323', monospace; font-size: 14px; color: #333;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3); max-width: 200px;
+  border-radius: 4px 4px 0 4px; cursor: pointer;
+  animation: popIn 0.3s ease;
+}
+.tray-bubble::after {
+  content: ''; position: absolute; bottom: -7px; right: 12px;
+  border: 7px solid transparent; border-top-color: #888; border-bottom: none;
+}
+@keyframes popIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+</style>
 </head>
 <body>
 
-  <!-- Windows XP BLISS wallpaper image (grass & sky iconic) -->
-  <img class="xp-wallpaper" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Bliss_%28Windows_XP%29.png/1024px-Bliss_%28Windows_XP%29.png" alt="Windows XP Bliss grass hill" onerror="this.src='https://wallpapercave.com/wp/wp1848610.jpg';">
-  <div class="xp-overlay"></div>
+<!-- SPLASH -->
+<div class="xp-splash" id="splash">
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="xp-flag"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div></div>
+    <div class="xp-splash-text">raoua.xp</div>
+    <div class="xp-splash-sub">Professional Edition</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div class="xp-progress-track"><div class="xp-progress-fill"></div></div>
+    <div class="xp-loading-text">Loading portfolio...</div>
+  </div>
+</div>
 
-  <div class="content-wrapper">
-    <!-- retro nav -->
-    <div class="xp-nav">
-      <div class="nav-start">
-        <span>🪟 DHEEMAN</span>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#projects">PROJECTS</a></li>
-        <li><a href="#skillset">SKILLS+SOFTWARE</a></li>
-        <li><a href="#contact">CONTACT</a></li>
-      </ul>
-      <div class="nav-time" id="xpClock">XP · 11:42 AM</div>
+<div class="xp-bg"></div>
+<div class="xp-sun"></div>
+
+<!-- CLOUDS -->
+<div class="cloud" style="top:8%;animation-duration:60s;animation-delay:-12s">
+  <svg width="130" height="55" viewBox="0 0 130 55"><ellipse cx="65" cy="38" rx="60" ry="20"/><ellipse cx="48" cy="30" rx="30" ry="20"/><ellipse cx="80" cy="27" rx="26" ry="18"/></svg>
+</div>
+<div class="cloud" style="top:16%;animation-duration:90s;animation-delay:-40s">
+  <svg width="95" height="42" viewBox="0 0 95 42"><ellipse cx="47" cy="30" rx="43" ry="15"/><ellipse cx="34" cy="24" rx="22" ry="15"/><ellipse cx="62" cy="22" rx="20" ry="13"/></svg>
+</div>
+<div class="cloud" style="top:5%;animation-duration:110s;animation-delay:-70s">
+  <svg width="160" height="65" viewBox="0 0 160 65"><ellipse cx="80" cy="46" rx="74" ry="22"/><ellipse cx="58" cy="36" rx="36" ry="24"/><ellipse cx="104" cy="33" rx="30" ry="20"/><ellipse cx="80" cy="30" rx="24" ry="18"/></svg>
+</div>
+
+<!-- HINT -->
+<div class="dblclick-hint" id="hint">Double-click icons to open windows</div>
+
+<!-- DESKTOP ICONS -->
+<div class="desktop-icons">
+
+  <div class="desktop-icon" ondblclick="openWin('about')">
+    <div class="di-img">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <rect x="2" y="8" width="40" height="30" rx="3" fill="#316ac5" stroke="#0040aa" stroke-width="1.5"/>
+        <rect x="2" y="8" width="40" height="9" rx="3" fill="#4a90d9"/>
+        <rect x="2" y="14" width="40" height="3" fill="#4a90d9"/>
+        <circle cx="22" cy="27" r="7" fill="#ffe0b2" stroke="#d4a060" stroke-width="1"/>
+        <rect x="13" y="35" width="18" height="3" rx="2" fill="#ffe0b2"/>
+        <circle cx="9" cy="12" r="2" fill="#ff5555"/>
+        <circle cx="15" cy="12" r="2" fill="#ffcc00"/>
+        <circle cx="21" cy="12" r="2" fill="#55cc55"/>
+      </svg>
     </div>
+    <div class="di-label">About Me</div>
+  </div>
 
-    <div class="container">
-      <!-- Profile & Resume data from given file (DHEEMAN SHRIVASTAU) -->
-      <div class="profile-card">
-        <div class="profile-flex">
-          <div class="avatar">
-            ⚡🎧
-          </div>
-          <div class="info">
-            <h1>DHEEMAN SHRIVASTAU</h1>
-            <p>GRAPHIC DESIGNER · VIDEO EDITOR · 3D ARTIST</p>
-            <div class="contact-details">
-              <span>📞 (639) 538-0730</span>
-              <span>✉ dheemanshrivastau@gmail.com</span>
-              <span>📍 Regina, SK, Canada</span>
-            </div>
-          </div>
-        </div>
-        <div class="bio">
-          🖌️ Graphic designer & video editor + 3D artist with 5+ years of experience, proficient in Adobe Creative Suite and major design software. Specializing in crafting compelling visuals, engaging content, and delivering cutting-edge design solutions. Also passionate about code and interactive media.
-        </div>
-      </div>
+  <div class="desktop-icon" ondblclick="openWin('projects')">
+    <div class="di-img">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <rect x="2" y="13" width="40" height="27" rx="2" fill="#f5c842" stroke="#c8a000" stroke-width="1.5"/>
+        <path d="M2 17 Q22 9 42 17" fill="#ffd740" stroke="#c8a000" stroke-width="1"/>
+        <rect x="8" y="6" width="14" height="9" rx="2" fill="#ffd740" stroke="#c8a000" stroke-width="1.5"/>
+        <rect x="10" y="22" width="10" height="8" rx="1" fill="white" opacity="0.5"/>
+        <rect x="24" y="22" width="10" height="8" rx="1" fill="white" opacity="0.5"/>
+        <rect x="10" y="32" width="24" height="4" rx="1" fill="white" opacity="0.35"/>
+      </svg>
+    </div>
+    <div class="di-label">My Projects</div>
+  </div>
 
-      <!-- PROJECTS SECTION - exactly what user wants: just projects, no dashboard, no emojis (except minimal retro icons ok?), removed any counts or stats -->
-      <h2 id="projects" class="section-title">📁  PROJECT FOLIO</h2>
-      <div class="projects-grid">
-        <!-- PROJECT 1: based on creativity of designer + soft skills, but actual work examples -->
-        <div class="xp-project-card">
-          <div class="project-title">🎨 BRAND IDENTITY · NEOVERSE</div>
-          <div class="project-desc">Full visual identity for a futuristic startup — designed logos, motion graphics, and social media templates. Delivered high-end 3D assets for product launch.</div>
-          <div class="tech-stack"><span class="tech-badge">Adobe Illustrator</span><span class="tech-badge">Photoshop</span><span class="tech-badge">After Effects</span></div>
-          <a href="#" class="project-link-btn">VIEW CASE ↗</a>
-        </div>
-        <div class="xp-project-card">
-          <div class="project-title">🎬 CINEMATIC EDIT · 'LOST HORIZON'</div>
-          <div class="project-desc">Trailer & short film editing for indie project — color grading, sound design, seamless transitions. VFX compositing using After Effects & Premiere Pro.</div>
-          <div class="tech-stack"><span class="tech-badge">Premiere Pro</span><span class="tech-badge">DaVinci Resolve</span><span class="tech-badge">Fusion</span></div>
-          <a href="#" class="project-link-btn">WATCH REEL ↗</a>
-        </div>
-        <div class="xp-project-card">
-          <div class="project-title">🧟 3D CHARACTER · 'CYBER SAMURAI'</div>
-          <div class="project-desc">High-poly 3D model sculpted in ZBrush, textured in Substance Painter, rendered in Blender Cycles. Used for game cinematics and NFT collection.</div>
-          <div class="tech-stack"><span class="tech-badge">Blender</span><span class="tech-badge">ZBrush</span><span class="tech-badge">Substance Painter</span></div>
-          <a href="#" class="project-link-btn">3D GALLERY ↗</a>
-        </div>
-        <div class="xp-project-card">
-          <div class="project-title">✍️ CONTENT CAMPAIGN · 'TECH PULSE'</div>
-          <div class="project-desc">Wrote SEO articles, social copies, and newsletters for tech brand. Increased engagement by 47% in Q3. Content strategy & blog management.</div>
-          <div class="tech-stack"><span class="tech-badge">Copywriting</span><span class="tech-badge">SEO</span><span class="tech-badge">WordPress</span></div>
-          <a href="#" class="project-link-btn">READ SAMPLES ↗</a>
-        </div>
-        <div class="xp-project-card">
-          <div class="project-title">🎮 GAME UI/UX · 'DRIFT ZONE'</div>
-          <div class="project-desc">Designed dynamic HUD, menus, and motion graphics for racing game. Collaborated with dev team to deliver vector assets and animations.</div>
-          <div class="tech-stack"><span class="tech-badge">Figma</span><span class="tech-badge">Illustrator</span><span class="tech-badge">Unity</span></div>
-          <a href="#" class="project-link-btn">UI SHOWCASE ↗</a>
-        </div>
-        <div class="xp-project-card">
-          <div class="project-title">📽️ MUSIC VIDEO EDIT · RHYTHM WAVES</div>
-          <div class="project-desc">Dynamic edit with heavy effects, synced visuals, color explosion. Used After Effects & Premiere. Viral on YouTube (150k+ views).</div>
-          <div class="tech-stack"><span class="tech-badge">After Effects</span><span class="tech-badge">Premiere</span><span class="tech-badge">Audition</span></div>
-          <a href="#" class="project-link-btn">WATCH EDIT ↗</a>
-        </div>
-      </div>
+  <div class="desktop-icon" ondblclick="openWin('skills')">
+    <div class="di-img">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <rect x="4" y="4" width="36" height="36" rx="4" fill="#7b68ee" stroke="#5a4dcc" stroke-width="1.5"/>
+        <rect x="8" y="13" width="28" height="4" rx="2" fill="white" opacity="0.9"/>
+        <rect x="8" y="21" width="20" height="4" rx="2" fill="white" opacity="0.9"/>
+        <rect x="8" y="29" width="24" height="4" rx="2" fill="white" opacity="0.9"/>
+        <circle cx="34" cy="15" r="4" fill="#00cc66"/>
+        <circle cx="34" cy="23" r="4" fill="#ffcc00"/>
+        <circle cx="34" cy="31" r="4" fill="#4a90d9"/>
+      </svg>
+    </div>
+    <div class="di-label">Skills</div>
+  </div>
 
-      <!-- SKILLS & LANGUAGES & SOFTWARE (expanded according to prompt, no emojis except maybe harmless but user said no emojis in context but we use minimal neutral, but we used none inside skill names, just labels) -->
-      <div id="skillset" class="skills-section">
-        <div class="skills-title">🖥️  TOOLKIT & LANGUAGES  📀</div>
-        <div style="margin-bottom: 18px;"><span class="category-skill">DESIGN / 3D</span> 
-          <span class="skill-item">Adobe Photoshop</span>
-          <span class="skill-item">Adobe Illustrator</span>
-          <span class="skill-item">Premiere Pro</span>
-          <span class="skill-item">After Effects</span>
-          <span class="skill-item">Lightroom</span>
-          <span class="skill-item">Blender</span>
-          <span class="skill-item">ZBrush</span>
-          <span class="skill-item">Substance Painter</span>
-          <span class="skill-item">Cinema 4D</span>
-          <span class="skill-item">DaVinci Resolve</span>
-          <span class="skill-item">Figma</span>
-        </div>
-        <div style="margin: 18px 0;"><span class="category-skill">CODE / DEV</span>  
-          <span class="skill-item">Python</span>
-          <span class="skill-item">JavaScript</span>
-          <span class="skill-item">HTML5/CSS3</span>
-          <span class="skill-item">React</span>
-          <span class="skill-item">Node.js</span>
-          <span class="skill-item">C++</span>
-          <span class="skill-item">Processing</span>
-          <span class="skill-item">GLSL Shaders</span>
-          <span class="skill-item">PHP</span>
-          <span class="skill-item">MySQL</span>
-        </div>
-        <div><span class="category-skill">SPOKEN LANGUAGES</span> 
-          <span class="skill-item">Hindi (Native)</span>
-          <span class="skill-item">English (Fluent)</span>
-          <span class="skill-item">French (Intermediate)</span>
-          <span class="skill-item">Sanskrit (basic)</span>
-        </div>
-        <div style="margin-top: 20px;"><span class="category-skill">OTHER FIELDS</span>
-          <span class="skill-item">Video Encoding</span>
-          <span class="skill-item">VFX Compositing</span>
-          <span class="skill-item">3D Rendering</span>
-          <span class="skill-item">Motion Graphics</span>
-          <span class="skill-item">UI/UX Design</span>
-          <span class="skill-item">Game Asset Creation</span>
-          <span class="skill-item">Sound Design</span>
-        </div>
-        <div style="margin-top: 18px; font-size: 0.75rem; background: #e3d89e80; border-radius: 24px; padding: 8px 16px;">
-          ⚡ 4+ years freelance designer + video editor | 2 years 3D artist | content writer
-        </div>
-      </div>
+  <div class="desktop-icon" ondblclick="openWin('contact')">
+    <div class="di-img">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <rect x="2" y="10" width="40" height="28" rx="3" fill="#e8e8e8" stroke="#aaa" stroke-width="1.5"/>
+        <path d="M2 14 L22 27 L42 14" stroke="#316ac5" stroke-width="2" fill="none"/>
+        <path d="M2 38 L16 25" stroke="#bbb" stroke-width="1.5"/>
+        <path d="M42 38 L28 25" stroke="#bbb" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div class="di-label">Contact</div>
+  </div>
 
-      <!-- extra fun: portfolio link (like user wanted) -->
-      <div style="text-align: center; margin: 32px 0 12px;">
-        <a href="#" style="background: #ffdb7e; padding: 12px 32px; border-radius: 60px; text-decoration: none; font-weight: bold; color: #2b4a1e; display: inline-block; border: 1px solid #fff0b5; box-shadow: 2px 2px 0 #966c2c;">🎞️  FULL PORTFOLIO HERE  🖌️</a>
-      </div>
+  <a class="desktop-icon" href="https://github.com/raoua123" target="_blank">
+    <div class="di-img">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="20" fill="#1a1a2e" stroke="#444" stroke-width="1"/>
+        <path d="M22 10C15.37 10 10 15.37 10 22c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23A11.5 11.5 0 0 1 22 12.9c1.02.005 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58C30.57 31.79 34 27.3 34 22c0-6.63-5.37-12-12-12z" fill="white"/>
+      </svg>
+    </div>
+    <div class="di-label">GitHub</div>
+  </a>
 
-      <!-- contact footer area -->
-      <div id="contact" style="background: #eac47daa; backdrop-filter: blur(10px); border-radius: 28px; padding: 28px 24px; margin-top: 32px;">
-        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;">
-          <div><strong>📬 GET IN TOUCH</strong><br>dheemanshrivastau@gmail.com<br>📞 (639) 538-0730</div>
-          <div><strong>🌐 FIND ME</strong><br>Behance / Instagram: @dheemannn<br>GitHub: dheeman-creative</div>
-          <div><strong>📍 REGINA, SK</strong><br>Open for freelance & collabs</div>
-        </div>
+  <div class="desktop-icon" ondblclick="openWin('notepad')">
+    <div class="di-img">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <rect x="4" y="2" width="30" height="38" rx="2" fill="white" stroke="#aaa" stroke-width="1.5"/>
+        <rect x="4" y="2" width="30" height="7" fill="#316ac5" rx="2"/>
+        <rect x="7" y="4" width="14" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+        <rect x="8" y="14" width="22" height="2" fill="#ddd"/>
+        <rect x="8" y="19" width="18" height="2" fill="#ddd"/>
+        <rect x="8" y="24" width="20" height="2" fill="#ddd"/>
+        <rect x="8" y="29" width="14" height="2" fill="#ddd"/>
+        <rect x="30" y="10" width="10" height="26" rx="2" fill="#f0ede3" stroke="#aaa" stroke-width="1"/>
+        <rect x="32" y="14" width="6" height="8" rx="1" fill="#c0bdb0"/>
+      </svg>
+    </div>
+    <div class="di-label">ReadMe.txt</div>
+  </div>
+
+</div>
+
+<!-- WINDOWS AREA -->
+<div id="windows-area" style="position:fixed;inset:0;bottom:40px;z-index:100;pointer-events:none">
+
+  <!-- ABOUT -->
+  <div class="win" id="win-about" style="width:500px;height:340px;top:60px;left:120px">
+    <div class="win-titlebar" id="tb-about">
+      <span class="win-icon-title">🖥</span>
+      <span class="win-title">About Me — Raoua Ben Hamed</span>
+      <div class="win-btns">
+        <div class="win-btn minimize" onclick="minimizeWin('about')">_</div>
+        <div class="win-btn maximize" onclick="maximizeWin('about')">□</div>
+        <div class="win-btn close" onclick="closeWin('about')">✕</div>
       </div>
     </div>
+    <div class="win-menubar">
+      <span class="win-menu-item">File</span><span class="win-menu-item">Edit</span>
+      <span class="win-menu-item">View</span><span class="win-menu-item">Help</span>
+    </div>
+    <div class="win-body">
+      <div class="about-content">
+        <div class="about-avatar">👩‍💻</div>
+        <div class="about-info">
+          <h2>RAOUA BEN HAMED</h2>
+          <div class="xp-info-row"><span class="xp-info-label">Role:</span> Software Eng. Student</div>
+          <div class="xp-info-row"><span class="xp-info-label">Location:</span> Tunisia</div>
+          <div class="xp-info-row"><span class="xp-info-label">GitHub:</span> <a href="https://github.com/raoua123" target="_blank">raoua123</a></div>
+          <div class="xp-info-row"><span class="xp-info-label">Status:</span> Open to opportunities</div>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px">
+        <p style="font-family:'VT323',monospace;font-size:16px;color:#333;line-height:1.7">
+          A software engineering student on a constant journey of learning, growth, and self-improvement.
+          Building fullstack web platforms, desktop games, and social apps — with Java, PHP, Symfony, TypeScript, and more.
+          Always curious. Always shipping.
+        </p>
+      </div>
+    </div>
+    <div class="win-statusbar"><span class="sb-section">1 object</span><span>Raoua Ben Hamed</span></div>
+  </div>
 
-    <div class="winxp-footer">
-      ⚡ DHEEMAN SHRIVASTAU · WINDOWS XP GRASS EDITION · ALL PROJECTS REAL & AESTHETIC ⚡
+  <!-- PROJECTS -->
+  <div class="win" id="win-projects" style="width:640px;height:420px;top:40px;left:200px">
+    <div class="win-titlebar" id="tb-projects">
+      <span class="win-icon-title">📁</span>
+      <span class="win-title">My Projects</span>
+      <div class="win-btns">
+        <div class="win-btn minimize" onclick="minimizeWin('projects')">_</div>
+        <div class="win-btn maximize" onclick="maximizeWin('projects')">□</div>
+        <div class="win-btn close" onclick="closeWin('projects')">✕</div>
+      </div>
+    </div>
+    <div class="win-menubar">
+      <span class="win-menu-item">File</span><span class="win-menu-item">Edit</span>
+      <span class="win-menu-item">View</span><span class="win-menu-item">Favorites</span>
+      <span class="win-menu-item">Tools</span><span class="win-menu-item">Help</span>
+    </div>
+    <div class="win-addrbar">
+      <label>Address</label>
+      <input type="text" value="C:\Users\Raoua\Projects" readonly/>
+    </div>
+    <div class="win-body" style="display:flex;height:100%;overflow:hidden">
+      <div class="proj-list-panel">
+        <div class="proj-list-item active" onclick="selectProject(0,this)"><span>📁</span> EventSphere</div>
+        <div class="proj-list-item" onclick="selectProject(1,this)"><span>📁</span> KnightVsDragons</div>
+        <div class="proj-list-item" onclick="selectProject(2,this)"><span>📁</span> Bobble</div>
+        <div class="proj-list-item" onclick="selectProject(3,this)"><span>📁</span> Mini_Projet</div>
+      </div>
+      <div class="proj-detail" id="proj-detail"></div>
+    </div>
+    <div class="win-statusbar"><span class="sb-section">4 objects</span><span id="proj-status">EventSphere selected</span></div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="win" id="win-skills" style="width:490px;height:430px;top:80px;left:160px">
+    <div class="win-titlebar" id="tb-skills">
+      <span class="win-icon-title">⚙</span>
+      <span class="win-title">Skills & Technologies</span>
+      <div class="win-btns">
+        <div class="win-btn minimize" onclick="minimizeWin('skills')">_</div>
+        <div class="win-btn maximize" onclick="maximizeWin('skills')">□</div>
+        <div class="win-btn close" onclick="closeWin('skills')">✕</div>
+      </div>
+    </div>
+    <div class="win-menubar">
+      <span class="win-menu-item">File</span><span class="win-menu-item">View</span><span class="win-menu-item">Help</span>
+    </div>
+    <div class="win-body">
+      <div class="skills-content">
+        <div class="skill-group">
+          <div class="skill-group-title">Programming Languages</div>
+          <div class="skill-bar-row"><span class="skill-bar-label">Java</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%"></div></div><span class="skill-bar-pct">85%</span></div>
+          <div class="skill-bar-row"><span class="skill-bar-label">PHP</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:80%"></div></div><span class="skill-bar-pct">80%</span></div>
+          <div class="skill-bar-row"><span class="skill-bar-label">JavaScript</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:75%"></div></div><span class="skill-bar-pct">75%</span></div>
+          <div class="skill-bar-row"><span class="skill-bar-label">TypeScript</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:65%"></div></div><span class="skill-bar-pct">65%</span></div>
+          <div class="skill-bar-row"><span class="skill-bar-label">Python</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%"></div></div><span class="skill-bar-pct">60%</span></div>
+          <div class="skill-bar-row"><span class="skill-bar-label">C</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:58%"></div></div><span class="skill-bar-pct">58%</span></div>
+          <div class="skill-bar-row"><span class="skill-bar-label">SQL</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:72%"></div></div><span class="skill-bar-pct">72%</span></div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Frameworks & Tools</div>
+          <div class="skill-list">
+            <span class="skill-pill">Symfony 7</span><span class="skill-pill">React</span>
+            <span class="skill-pill">Docker</span><span class="skill-pill">PostgreSQL</span>
+            <span class="skill-pill">Git</span><span class="skill-pill">Nginx</span>
+            <span class="skill-pill">PHPUnit</span><span class="skill-pill">JWT Auth</span>
+            <span class="skill-pill">WebAuthn</span><span class="skill-pill">HTML / CSS</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Human Languages</div>
+          <div class="skill-list">
+            <span class="skill-pill">Arabic — Native</span>
+            <span class="skill-pill">French — Fluent</span>
+            <span class="skill-pill">English — Fluent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="win-statusbar"><span>20+ technologies mastered</span></div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="win" id="win-contact" style="width:360px;height:230px;top:120px;left:260px">
+    <div class="win-titlebar" id="tb-contact">
+      <span class="win-icon-title">✉</span>
+      <span class="win-title">Contact</span>
+      <div class="win-btns">
+        <div class="win-btn minimize" onclick="minimizeWin('contact')">_</div>
+        <div class="win-btn maximize" onclick="maximizeWin('contact')">□</div>
+        <div class="win-btn close" onclick="closeWin('contact')">✕</div>
+      </div>
+    </div>
+    <div class="win-menubar"><span class="win-menu-item">File</span><span class="win-menu-item">View</span></div>
+    <div class="win-body" style="padding:18px;display:flex;flex-direction:column;gap:12px">
+      <p style="font-family:'VT323',monospace;font-size:17px;color:#333;line-height:1.5">
+        Open to new opportunities, collaborations, and good conversations about tech.
+      </p>
+      <a href="https://github.com/raoua123" target="_blank" class="contact-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85.004 1.7.115 2.5.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z"/></svg>
+        github.com/raoua123
+      </a>
+    </div>
+    <div class="win-statusbar"><span>Ready</span></div>
+  </div>
+
+  <!-- NOTEPAD -->
+  <div class="win" id="win-notepad" style="width:370px;height:290px;top:140px;left:290px">
+    <div class="win-titlebar" id="tb-notepad">
+      <span class="win-icon-title">📄</span>
+      <span class="win-title">ReadMe.txt - Notepad</span>
+      <div class="win-btns">
+        <div class="win-btn minimize" onclick="minimizeWin('notepad')">_</div>
+        <div class="win-btn maximize" onclick="maximizeWin('notepad')">□</div>
+        <div class="win-btn close" onclick="closeWin('notepad')">✕</div>
+      </div>
+    </div>
+    <div class="win-menubar">
+      <span class="win-menu-item">File</span><span class="win-menu-item">Edit</span>
+      <span class="win-menu-item">Format</span><span class="win-menu-item">Help</span>
+    </div>
+    <div class="win-body">
+      <textarea class="notepad-content" readonly>Hi! Welcome to my portfolio.
+
+I'm Raoua Ben Hamed — software
+engineering student from Tunisia.
+
+Double-click icons to explore:
+
+[ About Me    ] - Who I am
+[ My Projects ] - What I've built
+[ Skills      ] - What I know
+[ Contact     ] - How to reach me
+[ GitHub      ] - My code
+
+Currently working on:
+  * EventSphere (PHP/Symfony)
+  * KnightVsDragons (Java)
+  * Always learning more...
+
+Thanks for visiting!
+— Raoua :)</textarea>
     </div>
   </div>
 
-  <script>
-    // windows xp clock update (fun retro)
-    function updateClock() {
-      const now = new Date();
-      let hours = now.getHours();
-      let minutes = now.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12 || 12;
-      const timeStr = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')} ${ampm}`;
-      const clockDiv = document.getElementById('xpClock');
-      if(clockDiv) clockDiv.innerText = `⏲️ XP · ${timeStr}`;
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
+</div>
 
-    // optional: make all external placeholder links "#" don't actually navigate away
-    document.querySelectorAll('.project-link-btn, .nav-links a, .xp-nav .nav-start, .portfolio-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        if(link.getAttribute('href') === '#' || link.getAttribute('href') === '#projects' || link.getAttribute('href') === '#skillset' || link.getAttribute('href') === '#contact') {
-          // allow internal anchor scroll, good
-          if(link.getAttribute('href') === '#') e.preventDefault();
-          return;
-        }
-        if(link.getAttribute('href') && link.getAttribute('href').startsWith('#')) return;
-        if(link.classList.contains('project-link-btn') && link.getAttribute('href') === '#') {
-          e.preventDefault();
-          alert('✨ Full case study / demo available upon request. Contact for portfolio access! ✨');
-        }
-      });
-    });
-    // add "Full portfolio here" alert XP style
-    const portfolioBtn = document.querySelector('a[href="#"]');
-    if(portfolioBtn && portfolioBtn.innerText.includes("FULL PORTFOLIO HERE")) {
-      portfolioBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('🖼️ Complete portfolio includes 20+ projects, motion reels and 3D gallery. Email me for private link! 🎬');
-      });
+<!-- TASKBAR -->
+<div class="taskbar">
+  <div class="start-btn">
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <rect x="1" y="1" width="8" height="8" rx="1" fill="#f25022"/>
+      <rect x="11" y="1" width="8" height="8" rx="1" fill="#7fba00"/>
+      <rect x="1" y="11" width="8" height="8" rx="1" fill="#00a4ef"/>
+      <rect x="11" y="11" width="8" height="8" rx="1" fill="#ffb900"/>
+    </svg>
+    start
+  </div>
+  <div class="taskbar-divider"></div>
+  <div class="taskbar-apps" id="taskbar-apps"></div>
+  <div class="taskbar-clock" id="taskbar-clock">12:00</div>
+</div>
+
+<!-- TRAY BUBBLE -->
+<div class="tray-bubble" id="tray-bubble" onclick="this.style.display='none'">
+  Welcome! Double-click icons to explore. Click to dismiss.
+</div>
+
+<script>
+// ── PROJECTS DATA ──
+const projects = [
+  {
+    name: "EventSphere",
+    type: "Web Platform — PHP / Symfony",
+    desc: "A modern event reservation platform for Tunisia. Discover hackathons, masterclasses and more. Features JWT authentication, WebAuthn/Passkeys, an admin dashboard with live stats, email sandboxing via Mailpit, and full Docker + Nginx deployment.",
+    tags: ["PHP 8.2", "Symfony 7", "PostgreSQL", "Docker", "JWT", "WebAuthn", "JavaScript"],
+    lang: "PHP", langColor: "#4F5D95",
+    link: "https://github.com/raoua123/EventSphere",
+  },
+  {
+    name: "KnightVsDragons",
+    type: "Desktop Game — Java",
+    desc: "A retro 2D side-scrolling platformer written entirely in Java Swing. Battle dragons by answering Java quiz questions. Features pixel-art visuals, classic platformer movement, and a full OOP architecture.",
+    tags: ["Java", "Swing", "2D Graphics", "OOP", "Game Dev"],
+    lang: "Java", langColor: "#b07219",
+    link: "https://github.com/raoua123/KnightVsDragons",
+  },
+  {
+    name: "Bobble",
+    type: "Social + E-Commerce — TypeScript",
+    desc: "A social platform and e-commerce app for knitting and crochet enthusiasts. Share projects, organize patterns, and learn fiber arts. Built with a full TypeScript stack and modern architecture.",
+    tags: ["TypeScript", "Social Network", "E-commerce", "Full-Stack"],
+    lang: "TypeScript", langColor: "#3178c6",
+    link: "https://github.com/AttiaSabrine18/bobble",
+  },
+  {
+    name: "Mini_Projet",
+    type: "Academic Project — TypeScript",
+    desc: "A collaborative academic full-stack project built with TypeScript. Follows clean code principles, modern design patterns, and team-based development workflow.",
+    tags: ["TypeScript", "Full-Stack", "Team Project", "Academic"],
+    lang: "TypeScript", langColor: "#3178c6",
+    link: "https://github.com/AttiaSabrine18/Mini_Projet",
+  },
+];
+
+function renderProject(idx) {
+  const p = projects[idx];
+  document.getElementById('proj-detail').innerHTML = `
+    <div class="proj-detail-header">
+      <div class="proj-detail-icon">📁</div>
+      <div>
+        <div class="proj-detail-title">${p.name}</div>
+        <div class="proj-detail-sub">${p.type}</div>
+      </div>
+    </div>
+    <p class="proj-detail-desc">${p.desc}</p>
+    <div class="proj-tags">${p.tags.map(t=>`<span class="proj-tag">${t}</span>`).join('')}</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <a href="${p.link}" target="_blank" class="proj-link-btn">Open on GitHub &rarr;</a>
+      <span class="proj-lang-badge"><span class="lang-dot" style="background:${p.langColor}"></span>${p.lang}</span>
+    </div>
+  `;
+  document.getElementById('proj-status').textContent = p.name + ' selected';
+}
+
+function selectProject(idx, el) {
+  document.querySelectorAll('.proj-list-item').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  renderProject(idx);
+}
+
+renderProject(0);
+
+// ── WINDOW MANAGEMENT ──
+let zTop = 200;
+
+function bringToFront(id) {
+  const w = document.getElementById('win-' + id);
+  if (w) { zTop++; w.style.zIndex = zTop; }
+}
+
+function openWin(id) {
+  const w = document.getElementById('win-' + id);
+  if (!w) return;
+  if (w.classList.contains('open') && !w.classList.contains('minimized')) {
+    bringToFront(id); return;
+  }
+  w.classList.remove('minimized');
+  w.classList.add('open');
+  bringToFront(id);
+  updateTaskbar();
+  document.getElementById('hint').style.display = 'none';
+}
+
+function closeWin(id) {
+  const w = document.getElementById('win-' + id);
+  if (w) { w.classList.remove('open', 'minimized'); }
+  updateTaskbar();
+}
+
+function minimizeWin(id) {
+  const w = document.getElementById('win-' + id);
+  if (w) { w.classList.add('minimized'); }
+  updateTaskbar();
+}
+
+function maximizeWin(id) {
+  const w = document.getElementById('win-' + id);
+  if (!w) return;
+  if (w._maximized) {
+    w.style.top = w._ot; w.style.left = w._ol;
+    w.style.width = w._ow; w.style.height = w._oh;
+    w._maximized = false;
+  } else {
+    w._ot = w.style.top; w._ol = w.style.left;
+    w._ow = w.style.width; w._oh = w.style.height;
+    w.style.top = '0'; w.style.left = '0';
+    w.style.width = '100%';
+    w.style.height = document.getElementById('windows-area').offsetHeight + 'px';
+    w._maximized = true;
+  }
+}
+
+function updateTaskbar() {
+  const names = {about:'About Me', projects:'My Projects', skills:'Skills', contact:'Contact', notepad:'ReadMe.txt'};
+  const icons = {about:'🖥', projects:'📁', skills:'⚙', contact:'✉', notepad:'📄'};
+  const apps = document.getElementById('taskbar-apps');
+  apps.innerHTML = '';
+  ['about','projects','skills','contact','notepad'].forEach(id => {
+    const w = document.getElementById('win-' + id);
+    if (w && w.classList.contains('open')) {
+      const btn = document.createElement('div');
+      const minimized = w.classList.contains('minimized');
+      btn.className = 'taskbar-app' + (minimized ? '' : ' active');
+      btn.textContent = icons[id] + ' ' + names[id];
+      btn.onclick = () => {
+        if (minimized) { w.classList.remove('minimized'); bringToFront(id); }
+        else { minimizeWin(id); }
+        updateTaskbar();
+      };
+      apps.appendChild(btn);
     }
-  </script>
+  });
+}
+
+// Click window to bring to front
+document.querySelectorAll('.win').forEach(w => {
+  w.addEventListener('mousedown', () => bringToFront(w.id.replace('win-','')));
+});
+
+// ── DRAG ──
+['about','projects','skills','contact','notepad'].forEach(id => {
+  const tb = document.getElementById('tb-' + id);
+  const win = document.getElementById('win-' + id);
+  if (!tb || !win) return;
+  let dragging = false, ox = 0, oy = 0;
+  tb.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('win-btn')) return;
+    if (win._maximized) return;
+    dragging = true;
+    ox = e.clientX - win.offsetLeft;
+    oy = e.clientY - win.offsetTop;
+    bringToFront(id);
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    win.style.left = Math.max(0, e.clientX - ox) + 'px';
+    win.style.top = Math.max(0, e.clientY - oy) + 'px';
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+});
+
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('taskbar-clock').innerHTML =
+    h + ':' + String(m).padStart(2,'0') + ' ' + ap + '<br><span style="font-size:11px">' +
+    now.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + '</span>';
+}
+updateClock(); setInterval(updateClock, 15000);
+
+// ── SPLASH ──
+setTimeout(() => {
+  const s = document.getElementById('splash');
+  s.classList.add('fade-out');
+  setTimeout(() => { s.style.display = 'none'; }, 900);
+}, 2800);
+
+// Auto-open projects after splash
+setTimeout(() => { openWin('projects'); }, 3400);
+</script>
 </body>
 </html>
