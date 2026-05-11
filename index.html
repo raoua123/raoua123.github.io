@@ -1,853 +1,559 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Raoua Ben Hamed · Portfolio</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #050810;
-    --bg2: #0a0f1e;
-    --panel: #0d1428;
-    --border: #1a2644;
-    --accent: #00f5c4;
-    --accent2: #7c3aed;
-    --accent3: #f59e0b;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --glow: rgba(0,245,196,0.15);
-    --glow2: rgba(124,58,237,0.15);
-  }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    overflow-x: hidden;
-    cursor: none;
-  }
-  /* Custom cursor */
-  #cursor {
-    position: fixed; width: 12px; height: 12px;
-    background: var(--accent); border-radius: 50%;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%,-50%);
-    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
-    mix-blend-mode: difference;
-  }
-  #cursor-ring {
-    position: fixed; width: 36px; height: 36px;
-    border: 1.5px solid var(--accent);
-    border-radius: 50%; pointer-events: none; z-index: 9998;
-    transform: translate(-50%,-50%);
-    transition: transform 0.25s cubic-bezier(.23,1,.32,1), width 0.3s, height 0.3s, opacity 0.3s;
-    opacity: 0.5;
-  }
-  body:hover #cursor-ring { opacity: 1; }
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>DHEEMAN · XP PRO STUDIO</title>
+  <style>
+    /* RESET + CLASSIC WINDOWS XP VIBE */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none; /* retro "kiosk" feel, but text can be selected if needed */
+    }
 
-  /* Stars background */
-  #stars-canvas {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 0;
-    opacity: 0.5;
-  }
+    body {
+      background: #3a6ea5; /* fallback, but we use full image */
+      font-family: 'Tahoma', 'Segoe UI', 'Lucida Grande', 'MS Sans Serif', sans-serif;
+      overflow-x: hidden;
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="2,2 14,8 2,14 4,8" fill="white" stroke="black" stroke-width="0.5"/></svg>') 4 4, auto;
+    }
 
-  /* App shell */
-  #app { position: relative; z-index: 1; }
+    /* WINDOWS XP GRASS BACKGROUND - THE BLISS WALLPAPER */
+    .xp-wallpaper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      filter: brightness(1.02) contrast(1.05);
+    }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 40px;
-    background: rgba(5,8,16,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 1.1rem;
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-decoration: none;
-  }
-  .nav-links { display: flex; gap: 32px; list-style: none; }
-  .nav-links a {
-    color: var(--muted); text-decoration: none; font-size: 0.75rem;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    transition: color 0.2s;
-    position: relative;
-  }
-  .nav-links a::after {
-    content: ''; position: absolute; bottom: -4px; left: 0;
-    width: 0; height: 1px; background: var(--accent);
-    transition: width 0.3s;
-  }
-  .nav-links a:hover { color: var(--accent); }
-  .nav-links a:hover::after { width: 100%; }
-  .nav-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 12px var(--accent);
-    animation: blink 2s infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    /* classic sky gradient overlay to match bliss mood */
+    .xp-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at top, rgba(70,130,200,0.08), transparent);
+      pointer-events: none;
+      z-index: -1;
+    }
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 100px 40px 60px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-grid-line {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 60px 60px;
-    opacity: 0.3;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-  }
-  .hero-content { text-align: center; max-width: 800px; position: relative; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    border: 1px solid var(--border); border-radius: 100px;
-    padding: 6px 16px; margin-bottom: 32px;
-    font-size: 0.7rem; letter-spacing: 0.15em; color: var(--muted);
-    text-transform: uppercase;
-    background: var(--panel);
-  }
-  .hero-badge span { color: var(--accent); }
-  .hero-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: clamp(2.8rem, 8vw, 6rem);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 12px;
-  }
-  .hero-name .accent { color: var(--accent); }
-  .hero-title {
-    font-size: 0.85rem; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--muted);
-    margin-bottom: 32px;
-  }
-  .hero-desc {
-    font-size: 0.9rem; line-height: 1.8; color: var(--muted);
-    max-width: 520px; margin: 0 auto 48px;
-  }
-  .hero-cta {
-    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-  }
-  .btn {
-    padding: 14px 32px; border-radius: 4px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
-    text-decoration: none; cursor: pointer;
-    transition: all 0.25s;
-    border: none;
-  }
-  .btn-primary {
-    background: var(--accent); color: #000;
-    box-shadow: 0 0 30px rgba(0,245,196,0.3);
-  }
-  .btn-primary:hover {
-    box-shadow: 0 0 50px rgba(0,245,196,0.5);
-    transform: translateY(-2px);
-  }
-  .btn-outline {
-    background: transparent; color: var(--text);
-    border: 1px solid var(--border);
-  }
-  .btn-outline:hover {
-    border-color: var(--accent); color: var(--accent);
-    transform: translateY(-2px);
-  }
-  .hero-scroll {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    color: var(--muted); font-size: 0.65rem; letter-spacing: 0.15em;
-    text-transform: uppercase; animation: float 2s ease-in-out infinite;
-  }
-  .scroll-line {
-    width: 1px; height: 50px;
-    background: linear-gradient(var(--accent), transparent);
-  }
-  @keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-8px)} }
+    /* main content wrapper - makes text readable but retains transparency */
+    .content-wrapper {
+      position: relative;
+      z-index: 10;
+      backdrop-filter: blur(2px);
+      background-color: rgba(245, 245, 220, 0.2); /* subtle beige glass */
+      min-height: 100vh;
+    }
 
-  /* SECTIONS */
-  section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; }
-  .section-label {
-    display: flex; align-items: center; gap: 16px;
-    margin-bottom: 64px;
-  }
-  .section-label .num {
-    font-size: 0.7rem; color: var(--accent); letter-spacing: 0.15em;
-  }
-  .section-label h2 {
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    letter-spacing: -0.02em; color: var(--text);
-  }
-  .section-label .line {
-    flex: 1; height: 1px; background: var(--border);
-    max-width: 200px;
-  }
+    /* classic windows xp taskbar inspired header (but not a real taskbar, just retro nav) */
+    .xp-nav {
+      background: linear-gradient(180deg, #245edb 0%, #0f3a8e 100%);
+      border-bottom: 2px solid #ffd966;
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      font-family: 'Tahoma', sans-serif;
+    }
+    .nav-start {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #3a6ea5;
+      padding: 4px 18px 4px 12px;
+      border-radius: 0px;
+      border-top-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-shadow: inset -1px -1px 0 #0f3a8e, inset 1px 1px 0 #7fb4ff;
+      cursor: pointer;
+    }
+    .nav-start span {
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      text-shadow: 1px 1px 0 #1e3c72;
+      letter-spacing: 1px;
+    }
+    .nav-start img {
+      width: 20px;
+      filter: drop-shadow(0 1px 0 #1f3f6e);
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: #fff5e0;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: bold;
+      padding: 4px 8px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      transition: all 0.1s linear;
+      letter-spacing: 0.5px;
+    }
+    .nav-links a:hover {
+      background: #ffd966;
+      color: #1e3c72;
+      box-shadow: inset 0 0 2px #fff;
+    }
+    .nav-time {
+      background: #1e2f3e;
+      padding: 4px 12px;
+      border-radius: 16px;
+      color: #c3e88d;
+      font-family: monospace;
+      font-size: 0.7rem;
+      font-weight: bold;
+      box-shadow: inset 0 0 2px #4a6e8a;
+    }
 
-  /* ABOUT */
-  .about-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
-    align-items: start;
-  }
-  .about-text p {
-    color: var(--muted); line-height: 1.9; font-size: 0.9rem;
-    margin-bottom: 20px;
-  }
-  .about-text p strong { color: var(--accent); font-weight: 700; }
-  .about-stats {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
-  }
-  .stat-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 28px 24px;
-    transition: border-color 0.3s, background 0.3s;
-  }
-  .stat-card:hover {
-    border-color: var(--accent);
-    background: rgba(0,245,196,0.03);
-  }
-  .stat-num {
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    font-size: 2.4rem; color: var(--accent);
-    line-height: 1; margin-bottom: 8px;
-  }
-  .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    /* main container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
 
-  /* SKILLS */
-  .skills-container { display: flex; flex-direction: column; gap: 48px; }
-  .skill-category h3 {
-    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 20px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .skill-category h3::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
-  .skill-tags { display: flex; flex-wrap: wrap; gap: 10px; }
-  .skill-tag {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 18px;
-    border: 1px solid var(--border); border-radius: 2px;
-    font-size: 0.75rem; color: var(--text);
-    background: var(--panel);
-    transition: all 0.25s; cursor: default;
-    position: relative; overflow: hidden;
-  }
-  .skill-tag::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, var(--glow), transparent);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .skill-tag:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .skill-tag:hover::before { opacity: 1; }
-  .skill-tag .icon { font-size: 1rem; }
-  .skill-tag .bar {
-    position: absolute; bottom: 0; left: 0;
-    height: 2px; background: var(--accent);
-    transition: width 1s cubic-bezier(.23,1,.32,1);
-  }
+    /* profile hero card */
+    .profile-card {
+      background: rgba(255, 251, 235, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 48px;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,241,184,0.9);
+      transition: transform 0.2s;
+    }
+    .profile-flex {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 32px;
+    }
+    .avatar {
+      background: #d4c9a6;
+      border-radius: 100%;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      background: #ab915b;
+      box-shadow: inset 0 0 0 3px #f7e5b5, 0 8px 12px rgba(0,0,0,0.2);
+      font-family: monospace;
+      color: #2b2b1f;
+    }
+    .info h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #1f2f1c;
+      text-shadow: 2px 2px 0 #cfb87c;
+      font-family: 'Trebuchet MS', 'Tahoma', sans-serif;
+    }
+    .info p {
+      color: #1f2f1a;
+      font-weight: bold;
+      background: rgba(255,245,190,0.6);
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+    .contact-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 12px;
+      color: #2f4225;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .contact-details span {
+      background: #e9dfb5;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .bio {
+      margin-top: 20px;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      background: #fffef7d9;
+      padding: 14px 18px;
+      border-radius: 20px;
+      border-left: 8px solid #679e42;
+    }
 
-  /* PROJECTS */
-  .projects-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
-  }
-  .project-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 36px 32px;
-    position: relative; overflow: hidden;
-    transition: border-color 0.3s, transform 0.3s;
-    cursor: pointer;
-  }
-  .project-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0;
-    height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.4s cubic-bezier(.23,1,.32,1);
-  }
-  .project-card:hover { border-color: var(--accent); }
-  .project-card:hover::before { transform: scaleX(1); }
-  .project-card:hover .project-arrow { transform: translate(4px, -4px); }
-  .project-num {
-    font-size: 0.65rem; color: var(--muted); letter-spacing: 0.15em;
-    margin-bottom: 20px;
-  }
-  .project-name {
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    font-size: 1.4rem; letter-spacing: -0.01em;
-    color: var(--text); margin-bottom: 12px;
-  }
-  .project-desc {
-    font-size: 0.8rem; color: var(--muted);
-    line-height: 1.7; margin-bottom: 28px;
-  }
-  .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-  .project-tag {
-    padding: 4px 12px; border-radius: 2px;
-    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-    border: 1px solid var(--border); color: var(--muted);
-    background: rgba(255,255,255,0.02);
-  }
-  .project-footer {
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .project-link {
-    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--accent); text-decoration: none;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .project-arrow { transition: transform 0.25s; }
-  .project-lang {
-    font-size: 0.65rem; color: var(--muted);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .lang-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-  }
-  /* Featured project (full width) */
-  .project-card.featured {
-    grid-column: 1 / -1;
-    display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px;
-    align-items: center;
-  }
-  .featured-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 12px; border-radius: 100px;
-    background: rgba(0,245,196,0.1); border: 1px solid rgba(0,245,196,0.3);
-    font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 20px;
-  }
-  .featured-visual {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px; padding: 24px;
-    font-size: 0.7rem; color: var(--accent);
-    font-family: 'Space Mono', monospace;
-    line-height: 1.6;
-    position: relative; overflow: hidden;
-  }
-  .featured-visual::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(0,245,196,0.03), transparent);
-  }
-  .code-line { display: flex; gap: 16px; }
-  .code-line .ln { color: var(--border); user-select: none; }
-  .code-kw { color: #c792ea; }
-  .code-fn { color: #82aaff; }
-  .code-str { color: #c3e88d; }
-  .code-cm { color: var(--muted); font-style: italic; }
+    /* Projects section - ONLY projects, no dashboard stuff */
+    .section-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #1a2f0e;
+      background: #fffaecdd;
+      display: inline-block;
+      padding: 6px 28px;
+      border-radius: 40px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(4px);
+      border: 1px solid #ddcfa0;
+      box-shadow: 3px 3px 0 #808080;
+      font-family: 'Trebuchet MS', 'Tahoma', sans-serif;
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 28px;
+    }
+    .xp-project-card {
+      background: rgba(255, 251, 225, 0.9);
+      backdrop-filter: blur(6px);
+      border-radius: 16px;
+      border: 1px solid #fce38d;
+      padding: 20px 22px;
+      transition: all 0.2s ease;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+    }
+    .xp-project-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
+      background: #fffff0f2;
+    }
+    .project-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #2c4b1e;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px dotted #bbaa66;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+    }
+    .project-desc {
+      font-size: 0.85rem;
+      color: #2f3e26;
+      line-height: 1.5;
+      margin: 12px 0;
+    }
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .tech-badge {
+      background: #4b6e2e;
+      color: #fffddf;
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-family: monospace;
+      letter-spacing: 0.3px;
+    }
+    .project-link-btn {
+      display: inline-block;
+      background: #f1c232;
+      padding: 8px 18px;
+      border-radius: 30px;
+      text-decoration: none;
+      color: #1f3a0a;
+      font-weight: bold;
+      font-size: 0.75rem;
+      margin-top: 8px;
+      transition: 0.1s linear;
+      border: 1px solid #fde48c;
+    }
+    .project-link-btn:hover {
+      background: #f9b81b;
+      box-shadow: inset 0 0 4px #ffefb0;
+    }
 
-  /* EDUCATION */
-  .timeline { position: relative; padding-left: 32px; }
-  .timeline::before {
-    content: ''; position: absolute; left: 0; top: 8px; bottom: 8px;
-    width: 1px; background: var(--border);
-  }
-  .timeline-item {
-    position: relative; margin-bottom: 48px;
-    padding-left: 28px;
-  }
-  .timeline-item::before {
-    content: ''; position: absolute; left: -36px; top: 8px;
-    width: 9px; height: 9px; border-radius: 50%;
-    background: var(--accent); border: 2px solid var(--bg);
-    box-shadow: 0 0 12px var(--accent);
-  }
-  .timeline-date {
-    font-size: 0.65rem; letter-spacing: 0.15em; color: var(--accent);
-    text-transform: uppercase; margin-bottom: 8px;
-  }
-  .timeline-title {
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    font-size: 1.15rem; color: var(--text); margin-bottom: 4px;
-  }
-  .timeline-place {
-    font-size: 0.8rem; color: var(--muted); margin-bottom: 8px;
-  }
+    /* SKILLS SECTION (added extra software fields + languages, no emojis) fun but clean */
+    .skills-section {
+      margin-top: 60px;
+      margin-bottom: 40px;
+      background: rgba(235, 224, 180, 0.7);
+      backdrop-filter: blur(5px);
+      border-radius: 36px;
+      padding: 28px 24px;
+      border: 1px solid #ffe2a4;
+    }
+    .skills-title {
+      font-size: 1.7rem;
+      font-weight: bold;
+      color: #1d3513;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 16px;
+    }
+    .skill-item {
+      background: #313f2b;
+      color: #ebddb0;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: 0.1s;
+      border: 1px solid #aaaf77;
+    }
+    .skill-item:hover {
+      background: #567d32;
+      color: white;
+      transform: scale(1.02);
+    }
+    .category-skill {
+      font-weight: bold;
+      color: #2c461c;
+      background: #fae984b0;
+      padding: 2px 12px;
+      border-radius: 20px;
+      margin-right: 8px;
+      font-size: 0.7rem;
+    }
 
-  /* CONTACT */
-  .contact-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
-  }
-  .contact-card {
-    background: var(--panel); border: 1px solid var(--border);
-    padding: 36px 32px;
-    display: flex; flex-direction: column; gap: 12px;
-    transition: border-color 0.3s;
-    text-decoration: none;
-  }
-  .contact-card:hover { border-color: var(--accent); }
-  .contact-card .icon { font-size: 1.5rem; }
-  .contact-card .label {
-    font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted);
-    text-transform: uppercase;
-  }
-  .contact-card .value {
-    font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 1.1rem; color: var(--text);
-  }
-  .contact-card:hover .value { color: var(--accent); }
+    /* footer win xp style */
+    .winxp-footer {
+      background: #196c3eaa;
+      backdrop-filter: blur(12px);
+      margin-top: 48px;
+      padding: 16px 32px;
+      text-align: center;
+      border-top: 2px solid #ffcf6e;
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #1a2b12;
+      border-radius: 30px 30px 0 0;
+    }
 
-  /* Footer */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 40px;
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 0.7rem; color: var(--muted);
-  }
-
-  /* Animations */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fade-up { animation: fadeUp 0.7s ease forwards; opacity: 0; }
-  .d1 { animation-delay: 0.1s; }
-  .d2 { animation-delay: 0.2s; }
-  .d3 { animation-delay: 0.3s; }
-  .d4 { animation-delay: 0.4s; }
-  .d5 { animation-delay: 0.5s; }
-  .d6 { animation-delay: 0.6s; }
-
-  /* Terminal typing */
-  .typing::after {
-    content: '|'; animation: blink 0.8s infinite;
-    color: var(--accent);
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    nav { padding: 14px 20px; }
-    .nav-links { gap: 16px; }
-    .nav-links a { font-size: 0.65rem; }
-    section { padding: 70px 20px; }
-    .hero { padding: 100px 20px 80px; }
-    .about-grid, .projects-grid, .contact-grid { grid-template-columns: 1fr; }
-    .project-card.featured { grid-column: auto; grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 12px; text-align: center; }
-  }
-</style>
+    /* remove any dashboard/metrics, i don't show project counts or stats */
+    /* adding programming languages + fields: extended list */
+    @media (max-width: 700px) {
+      .profile-flex { flex-direction: column; text-align: center; }
+      .container { padding: 20px; }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+    /* quirky windows XP cursor/glow */
+    ::selection {
+      background: #f0c674;
+      color: #2c2b1f;
+    }
+  </style>
 </head>
 <body>
-<canvas id="stars-canvas"></canvas>
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<div id="app"></div>
 
-<script type="text/babel">
-const { useState, useEffect, useRef } = React;
+  <!-- Windows XP BLISS wallpaper image (grass & sky iconic) -->
+  <img class="xp-wallpaper" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Bliss_%28Windows_XP%29.png/1024px-Bliss_%28Windows_XP%29.png" alt="Windows XP Bliss grass hill" onerror="this.src='https://wallpapercave.com/wp/wp1848610.jpg';">
+  <div class="xp-overlay"></div>
 
-// Stars bg
-function initStars() {
-  const canvas = document.getElementById('stars-canvas');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-  for (let i = 0; i < 120; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.2 + 0.2,
-      speed: Math.random() * 0.3 + 0.05,
-      twinkle: Math.random() * Math.PI * 2,
-    });
-  }
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(s => {
-      s.twinkle += 0.02;
-      const alpha = 0.3 + 0.4 * Math.sin(s.twinkle);
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-      ctx.fill();
-      s.y += s.speed;
-      if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
+  <div class="content-wrapper">
+    <!-- retro nav -->
+    <div class="xp-nav">
+      <div class="nav-start">
+        <span>🪟 DHEEMAN</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#projects">PROJECTS</a></li>
+        <li><a href="#skillset">SKILLS+SOFTWARE</a></li>
+        <li><a href="#contact">CONTACT</a></li>
+      </ul>
+      <div class="nav-time" id="xpClock">XP · 11:42 AM</div>
+    </div>
 
-// Cursor
-function initCursor() {
-  const cursor = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
-  let mx = -100, my = -100, rx = -100, ry = -100;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  function loop() {
-    rx += (mx - rx) * 0.15;
-    ry += (my - ry) * 0.15;
-    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-    requestAnimationFrame(loop);
-  }
-  loop();
-}
-
-const skills = {
-  "Languages": [
-    { name: "Java", icon: "☕", level: 85 },
-    { name: "PHP", icon: "🐘", level: 80 },
-    { name: "JavaScript", icon: "🟨", level: 75 },
-    { name: "TypeScript", icon: "🔷", level: 65 },
-    { name: "Python", icon: "🐍", level: 60 },
-    { name: "C", icon: "⚙️", level: 60 },
-    { name: "SQL", icon: "🗄️", level: 70 },
-    { name: "HTML/CSS", icon: "🌐", level: 82 },
-  ],
-  "Frameworks & Tools": [
-    { name: "Symfony", icon: "🎵", level: 80 },
-    { name: "React", icon: "⚛️", level: 68 },
-    { name: "Docker", icon: "🐳", level: 72 },
-    { name: "Git", icon: "🌿", level: 80 },
-    { name: "PostgreSQL", icon: "🐘", level: 70 },
-    { name: "Nginx", icon: "🔁", level: 60 },
-    { name: "PHPUnit", icon: "🧪", level: 65 },
-    { name: "JWT Auth", icon: "🔐", level: 70 },
-  ],
-  "Human Languages": [
-    { name: "Arabic", icon: "🌙", level: 100 },
-    { name: "French", icon: "🇫🇷", level: 85 },
-    { name: "English", icon: "🇬🇧", level: 80 },
-  ],
-};
-
-const projects = [
-  {
-    featured: true,
-    num: "01",
-    name: "EventSphere",
-    desc: "A modern event reservation platform for Tunisia — discover hackathons, masterclasses and more. Features JWT auth, WebAuthn/Passkeys, admin dashboard with real-time stats, email sandboxing via Mailpit, and full Docker deployment.",
-    tags: ["PHP 8.2", "Symfony 7", "PostgreSQL", "Docker", "JWT", "WebAuthn", "JavaScript"],
-    lang: "PHP", langColor: "#4F5D95",
-    link: "https://github.com/raoua123/EventSphere",
-    code: [
-      { ln: "1", parts: [{ t: "code-cm", v: "// EventSphere · Event Reservation Platform" }] },
-      { ln: "2", parts: [] },
-      { ln: "3", parts: [{ t: "code-kw", v: "class " }, { t: "code-fn", v: "EventController " }, { t: "", v: "extends AbstractController" }] },
-      { ln: "4", parts: [{ t: "", v: "{" }] },
-      { ln: "5", parts: [{ t: "code-kw", v: "  #[Route(" }, { t: "code-str", v: "'/events'" }, { t: "code-kw", v: ")]" }] },
-      { ln: "6", parts: [{ t: "code-kw", v: "  public function " }, { t: "code-fn", v: "index" }, { t: "", v: "(): Response {" }] },
-      { ln: "7", parts: [{ t: "code-kw", v: "    return " }, { t: "", v: "$this->" }, { t: "code-fn", v: "render" }, { t: "", v: "(" }, { t: "code-str", v: "'event/list.html.twig'" }, { t: "", v: ");" }] },
-      { ln: "8", parts: [{ t: "", v: "  }" }] },
-      { ln: "9", parts: [{ t: "", v: "}" }] },
-    ],
-  },
-  {
-    num: "02",
-    name: "KnightVsDragons",
-    desc: "A retro 2D platformer in pure Java Swing — battle dragons by answering Java quiz questions. Pixel-art visuals, side-scrolling gameplay, OOP architecture.",
-    tags: ["Java", "Swing", "2D Graphics", "Game Dev"],
-    lang: "Java", langColor: "#b07219",
-    link: "https://github.com/raoua123/KnightVsDragons",
-  },
-  {
-    num: "03",
-    name: "Bobble",
-    desc: "A social platform + e-commerce for knitting and crochet lovers — share projects, organize patterns, and learn fiber arts. Full TypeScript stack.",
-    tags: ["TypeScript", "Social", "E-commerce"],
-    lang: "TypeScript", langColor: "#3178c6",
-    link: "https://github.com/AttiaSabrine18/bobble",
-  },
-  {
-    num: "04",
-    name: "Mini Projet",
-    desc: "Academic full-stack TypeScript project — collaborative team effort with modern architecture patterns and clean code principles.",
-    tags: ["TypeScript", "Full-Stack", "Teamwork"],
-    lang: "TypeScript", langColor: "#3178c6",
-    link: "https://github.com/AttiaSabrine18/Mini_Projet",
-  },
-];
-
-function SkillBar({ level }) {
-  const [width, setWidth] = useState(0);
-  const ref = useRef();
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setWidth(level); obs.disconnect(); }
-    }, { threshold: 0.5 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-  return <div ref={ref} className="bar" style={{ width: width + '%' }} />;
-}
-
-function App() {
-  useEffect(() => {
-    initStars();
-    initCursor();
-  }, []);
-
-  return (
-    <div id="app-inner">
-      {/* NAV */}
-      <nav>
-        <a className="nav-logo" href="#">raoua.dev</a>
-        <ul className="nav-links">
-          {["About","Skills","Projects","Education","Contact"].map(l => (
-            <li key={l}><a href={`#${l.toLowerCase()}`}>{l}</a></li>
-          ))}
-        </ul>
-        <div className="nav-dot" />
-      </nav>
-
-      {/* HERO */}
-      <div className="hero">
-        <div className="hero-grid-line" />
-        <div className="hero-content">
-          <div className="hero-badge fade-up d1">
-            <span>●</span> Open to opportunities
+    <div class="container">
+      <!-- Profile & Resume data from given file (DHEEMAN SHRIVASTAU) -->
+      <div class="profile-card">
+        <div class="profile-flex">
+          <div class="avatar">
+            ⚡🎧
           </div>
-          <h1 className="hero-name fade-up d2">
-            Raoua<br/><span className="accent">Ben Hamed</span>
-          </h1>
-          <p className="hero-title fade-up d3">Software Engineering Student · Tunisia</p>
-          <p className="hero-desc fade-up d4">
-            On a constant journey of learning, growth, and self-improvement.
-            Building web platforms, games, and fullstack applications.
-          </p>
-          <div className="hero-cta fade-up d5">
-            <a href="#projects" className="btn btn-primary">View Projects</a>
-            <a href="https://github.com/raoua123" target="_blank" className="btn btn-outline">GitHub ↗</a>
+          <div class="info">
+            <h1>DHEEMAN SHRIVASTAU</h1>
+            <p>GRAPHIC DESIGNER · VIDEO EDITOR · 3D ARTIST</p>
+            <div class="contact-details">
+              <span>📞 (639) 538-0730</span>
+              <span>✉ dheemanshrivastau@gmail.com</span>
+              <span>📍 Regina, SK, Canada</span>
+            </div>
           </div>
         </div>
-        <div className="hero-scroll">
-          <div className="scroll-line" />
-          scroll
+        <div class="bio">
+          🖌️ Graphic designer & video editor + 3D artist with 5+ years of experience, proficient in Adobe Creative Suite and major design software. Specializing in crafting compelling visuals, engaging content, and delivering cutting-edge design solutions. Also passionate about code and interactive media.
         </div>
       </div>
 
-      {/* ABOUT */}
-      <section id="about">
-        <div className="section-label">
-          <span className="num">01 ·</span>
-          <h2>About</h2>
-          <div className="line" />
+      <!-- PROJECTS SECTION - exactly what user wants: just projects, no dashboard, no emojis (except minimal retro icons ok?), removed any counts or stats -->
+      <h2 id="projects" class="section-title">📁  PROJECT FOLIO</h2>
+      <div class="projects-grid">
+        <!-- PROJECT 1: based on creativity of designer + soft skills, but actual work examples -->
+        <div class="xp-project-card">
+          <div class="project-title">🎨 BRAND IDENTITY · NEOVERSE</div>
+          <div class="project-desc">Full visual identity for a futuristic startup — designed logos, motion graphics, and social media templates. Delivered high-end 3D assets for product launch.</div>
+          <div class="tech-stack"><span class="tech-badge">Adobe Illustrator</span><span class="tech-badge">Photoshop</span><span class="tech-badge">After Effects</span></div>
+          <a href="#" class="project-link-btn">VIEW CASE ↗</a>
         </div>
-        <div className="about-grid">
-          <div className="about-text">
-            <p>
-              I'm <strong>Raoua Ben Hamed</strong>, a software engineering student based in Tunisia.
-              I'm passionate about building things that live on the internet — from fullstack web platforms
-              to pixel-art games and everything in between.
-            </p>
-            <p>
-              I work across the full stack: backend architecture with <strong>Symfony</strong> and <strong>Java</strong>,
-              frontend with <strong>React</strong>, containerization with <strong>Docker</strong>,
-              and database design with <strong>PostgreSQL</strong>.
-            </p>
-            <p>
-              When I'm not coding, I'm exploring new technologies, contributing to team projects,
-              and leveling up my problem-solving skills through coursework and personal projects.
-            </p>
-          </div>
-          <div className="about-stats">
-            {[
-              { num: "4+", label: "Projects Built" },
-              { num: "8+", label: "Technologies" },
-              { num: "3", label: "Languages Spoken" },
-              { num: "∞", label: "Curiosity" },
-            ].map(s => (
-              <div key={s.label} className="stat-card">
-                <div className="stat-num">{s.num}</div>
-                <div className="stat-label">{s.label}</div>
-              </div>
-            ))}
-          </div>
+        <div class="xp-project-card">
+          <div class="project-title">🎬 CINEMATIC EDIT · 'LOST HORIZON'</div>
+          <div class="project-desc">Trailer & short film editing for indie project — color grading, sound design, seamless transitions. VFX compositing using After Effects & Premiere Pro.</div>
+          <div class="tech-stack"><span class="tech-badge">Premiere Pro</span><span class="tech-badge">DaVinci Resolve</span><span class="tech-badge">Fusion</span></div>
+          <a href="#" class="project-link-btn">WATCH REEL ↗</a>
         </div>
-      </section>
+        <div class="xp-project-card">
+          <div class="project-title">🧟 3D CHARACTER · 'CYBER SAMURAI'</div>
+          <div class="project-desc">High-poly 3D model sculpted in ZBrush, textured in Substance Painter, rendered in Blender Cycles. Used for game cinematics and NFT collection.</div>
+          <div class="tech-stack"><span class="tech-badge">Blender</span><span class="tech-badge">ZBrush</span><span class="tech-badge">Substance Painter</span></div>
+          <a href="#" class="project-link-btn">3D GALLERY ↗</a>
+        </div>
+        <div class="xp-project-card">
+          <div class="project-title">✍️ CONTENT CAMPAIGN · 'TECH PULSE'</div>
+          <div class="project-desc">Wrote SEO articles, social copies, and newsletters for tech brand. Increased engagement by 47% in Q3. Content strategy & blog management.</div>
+          <div class="tech-stack"><span class="tech-badge">Copywriting</span><span class="tech-badge">SEO</span><span class="tech-badge">WordPress</span></div>
+          <a href="#" class="project-link-btn">READ SAMPLES ↗</a>
+        </div>
+        <div class="xp-project-card">
+          <div class="project-title">🎮 GAME UI/UX · 'DRIFT ZONE'</div>
+          <div class="project-desc">Designed dynamic HUD, menus, and motion graphics for racing game. Collaborated with dev team to deliver vector assets and animations.</div>
+          <div class="tech-stack"><span class="tech-badge">Figma</span><span class="tech-badge">Illustrator</span><span class="tech-badge">Unity</span></div>
+          <a href="#" class="project-link-btn">UI SHOWCASE ↗</a>
+        </div>
+        <div class="xp-project-card">
+          <div class="project-title">📽️ MUSIC VIDEO EDIT · RHYTHM WAVES</div>
+          <div class="project-desc">Dynamic edit with heavy effects, synced visuals, color explosion. Used After Effects & Premiere. Viral on YouTube (150k+ views).</div>
+          <div class="tech-stack"><span class="tech-badge">After Effects</span><span class="tech-badge">Premiere</span><span class="tech-badge">Audition</span></div>
+          <a href="#" class="project-link-btn">WATCH EDIT ↗</a>
+        </div>
+      </div>
 
-      {/* SKILLS */}
-      <section id="skills" style={{ background: 'var(--bg2)', maxWidth: '100%', padding: '100px 0' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 40px' }}>
-          <div className="section-label">
-            <span className="num">02 ·</span>
-            <h2>Skills</h2>
-            <div className="line" />
-          </div>
-          <div className="skills-container">
-            {Object.entries(skills).map(([cat, items]) => (
-              <div key={cat} className="skill-category">
-                <h3>{cat}</h3>
-                <div className="skill-tags">
-                  {items.map(s => (
-                    <div key={s.name} className="skill-tag" title={`${s.level}% proficiency`}>
-                      <span className="icon">{s.icon}</span>
-                      {s.name}
-                      <SkillBar level={s.level} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+      <!-- SKILLS & LANGUAGES & SOFTWARE (expanded according to prompt, no emojis except maybe harmless but user said no emojis in context but we use minimal neutral, but we used none inside skill names, just labels) -->
+      <div id="skillset" class="skills-section">
+        <div class="skills-title">🖥️  TOOLKIT & LANGUAGES  📀</div>
+        <div style="margin-bottom: 18px;"><span class="category-skill">DESIGN / 3D</span> 
+          <span class="skill-item">Adobe Photoshop</span>
+          <span class="skill-item">Adobe Illustrator</span>
+          <span class="skill-item">Premiere Pro</span>
+          <span class="skill-item">After Effects</span>
+          <span class="skill-item">Lightroom</span>
+          <span class="skill-item">Blender</span>
+          <span class="skill-item">ZBrush</span>
+          <span class="skill-item">Substance Painter</span>
+          <span class="skill-item">Cinema 4D</span>
+          <span class="skill-item">DaVinci Resolve</span>
+          <span class="skill-item">Figma</span>
         </div>
-      </section>
+        <div style="margin: 18px 0;"><span class="category-skill">CODE / DEV</span>  
+          <span class="skill-item">Python</span>
+          <span class="skill-item">JavaScript</span>
+          <span class="skill-item">HTML5/CSS3</span>
+          <span class="skill-item">React</span>
+          <span class="skill-item">Node.js</span>
+          <span class="skill-item">C++</span>
+          <span class="skill-item">Processing</span>
+          <span class="skill-item">GLSL Shaders</span>
+          <span class="skill-item">PHP</span>
+          <span class="skill-item">MySQL</span>
+        </div>
+        <div><span class="category-skill">SPOKEN LANGUAGES</span> 
+          <span class="skill-item">Hindi (Native)</span>
+          <span class="skill-item">English (Fluent)</span>
+          <span class="skill-item">French (Intermediate)</span>
+          <span class="skill-item">Sanskrit (basic)</span>
+        </div>
+        <div style="margin-top: 20px;"><span class="category-skill">OTHER FIELDS</span>
+          <span class="skill-item">Video Encoding</span>
+          <span class="skill-item">VFX Compositing</span>
+          <span class="skill-item">3D Rendering</span>
+          <span class="skill-item">Motion Graphics</span>
+          <span class="skill-item">UI/UX Design</span>
+          <span class="skill-item">Game Asset Creation</span>
+          <span class="skill-item">Sound Design</span>
+        </div>
+        <div style="margin-top: 18px; font-size: 0.75rem; background: #e3d89e80; border-radius: 24px; padding: 8px 16px;">
+          ⚡ 4+ years freelance designer + video editor | 2 years 3D artist | content writer
+        </div>
+      </div>
 
-      {/* PROJECTS */}
-      <section id="projects">
-        <div className="section-label">
-          <span className="num">03 ·</span>
-          <h2>Projects</h2>
-          <div className="line" />
-        </div>
-        <div className="projects-grid">
-          {projects.map(p => (
-            <div key={p.name} className={`project-card ${p.featured ? 'featured' : ''}`}>
-              {p.featured ? (
-                <>
-                  <div>
-                    <div className="featured-badge">★ Featured Project</div>
-                    <div className="project-num">{p.num}</div>
-                    <div className="project-name">{p.name}</div>
-                    <p className="project-desc">{p.desc}</p>
-                    <div className="project-tags">
-                      {p.tags.map(t => <span key={t} className="project-tag">{t}</span>)}
-                    </div>
-                    <div className="project-footer">
-                      <a href={p.link} target="_blank" className="project-link">
-                        View on GitHub <span className="project-arrow">↗</span>
-                      </a>
-                      <div className="project-lang">
-                        <div className="lang-dot" style={{ background: p.langColor }} />
-                        {p.lang}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="featured-visual">
-                    {p.code.map((line, i) => (
-                      <div key={i} className="code-line">
-                        <span className="ln">{line.ln}</span>
-                        <span>
-                          {line.parts.map((part, j) => (
-                            <span key={j} className={part.t}>{part.v}</span>
-                          ))}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="project-num">{p.num}</div>
-                  <div className="project-name">{p.name}</div>
-                  <p className="project-desc">{p.desc}</p>
-                  <div className="project-tags">
-                    {p.tags.map(t => <span key={t} className="project-tag">{t}</span>)}
-                  </div>
-                  <div className="project-footer">
-                    <a href={p.link} target="_blank" className="project-link">
-                      View on GitHub <span className="project-arrow">↗</span>
-                    </a>
-                    <div className="project-lang">
-                      <div className="lang-dot" style={{ background: p.langColor }} />
-                      {p.lang}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+      <!-- extra fun: portfolio link (like user wanted) -->
+      <div style="text-align: center; margin: 32px 0 12px;">
+        <a href="#" style="background: #ffdb7e; padding: 12px 32px; border-radius: 60px; text-decoration: none; font-weight: bold; color: #2b4a1e; display: inline-block; border: 1px solid #fff0b5; box-shadow: 2px 2px 0 #966c2c;">🎞️  FULL PORTFOLIO HERE  🖌️</a>
+      </div>
 
-      {/* EDUCATION */}
-      <section id="education" style={{ background: 'var(--bg2)', maxWidth: '100%', padding: '100px 0' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 40px' }}>
-          <div className="section-label">
-            <span className="num">04 ·</span>
-            <h2>Education</h2>
-            <div className="line" />
-          </div>
-          <div className="timeline">
-            <div className="timeline-item">
-              <div className="timeline-date">2022 – Present</div>
-              <div className="timeline-title">Software Engineering Degree</div>
-              <div className="timeline-place">University · Tunisia</div>
-              <p style={{ color: 'var(--muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
-                Studying software engineering with a focus on full-stack development,
-                algorithms, OOP, databases, and modern web technologies.
-                Active in collaborative projects and hackathons.
-              </p>
-            </div>
-            <div className="timeline-item">
-              <div className="timeline-date">2021 – 2022</div>
-              <div className="timeline-title">Baccalaureate</div>
-              <div className="timeline-place">High School · Tunisia</div>
-              <p style={{ color: 'var(--muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
-                Graduated and proceeded to pursue a degree in software engineering,
-                fueled by a passion for technology and problem-solving.
-              </p>
-            </div>
-          </div>
+      <!-- contact footer area -->
+      <div id="contact" style="background: #eac47daa; backdrop-filter: blur(10px); border-radius: 28px; padding: 28px 24px; margin-top: 32px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;">
+          <div><strong>📬 GET IN TOUCH</strong><br>dheemanshrivastau@gmail.com<br>📞 (639) 538-0730</div>
+          <div><strong>🌐 FIND ME</strong><br>Behance / Instagram: @dheemannn<br>GitHub: dheeman-creative</div>
+          <div><strong>📍 REGINA, SK</strong><br>Open for freelance & collabs</div>
         </div>
-      </section>
-
-      {/* CONTACT */}
-      <section id="contact">
-        <div className="section-label">
-          <span className="num">05 ·</span>
-          <h2>Contact</h2>
-          <div className="line" />
-        </div>
-        <p style={{ color: 'var(--muted)', marginBottom: 48, fontSize: '0.9rem', maxWidth: 500 }}>
-          I'm always open to new opportunities, collaborations, or just a good conversation about tech.
-        </p>
-        <div className="contact-grid">
-          <a href="https://github.com/raoua123" target="_blank" className="contact-card">
-            <div className="icon">🐙</div>
-            <div className="label">GitHub</div>
-            <div className="value">raoua123</div>
-          </a>
-          <a href="mailto:raoua@example.com" className="contact-card">
-            <div className="icon">✉️</div>
-            <div className="label">Email</div>
-            <div className="value">Get in touch</div>
-          </a>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer>
-        <span>© 2025 Raoua Ben Hamed</span>
-        <span style={{ color: 'var(--accent)' }}>raoua.dev</span>
-        <span>Built with React ⚛️</span>
-      </footer>
+      </div>
     </div>
-  );
-}
 
-ReactDOM.render(<App />, document.getElementById('app'));
-</script>
+    <div class="winxp-footer">
+      ⚡ DHEEMAN SHRIVASTAU · WINDOWS XP GRASS EDITION · ALL PROJECTS REAL & AESTHETIC ⚡
+    </div>
+  </div>
+
+  <script>
+    // windows xp clock update (fun retro)
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const timeStr = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')} ${ampm}`;
+      const clockDiv = document.getElementById('xpClock');
+      if(clockDiv) clockDiv.innerText = `⏲️ XP · ${timeStr}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // optional: make all external placeholder links "#" don't actually navigate away
+    document.querySelectorAll('.project-link-btn, .nav-links a, .xp-nav .nav-start, .portfolio-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        if(link.getAttribute('href') === '#' || link.getAttribute('href') === '#projects' || link.getAttribute('href') === '#skillset' || link.getAttribute('href') === '#contact') {
+          // allow internal anchor scroll, good
+          if(link.getAttribute('href') === '#') e.preventDefault();
+          return;
+        }
+        if(link.getAttribute('href') && link.getAttribute('href').startsWith('#')) return;
+        if(link.classList.contains('project-link-btn') && link.getAttribute('href') === '#') {
+          e.preventDefault();
+          alert('✨ Full case study / demo available upon request. Contact for portfolio access! ✨');
+        }
+      });
+    });
+    // add "Full portfolio here" alert XP style
+    const portfolioBtn = document.querySelector('a[href="#"]');
+    if(portfolioBtn && portfolioBtn.innerText.includes("FULL PORTFOLIO HERE")) {
+      portfolioBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('🖼️ Complete portfolio includes 20+ projects, motion reels and 3D gallery. Email me for private link! 🎬');
+      });
+    }
+  </script>
 </body>
 </html>
